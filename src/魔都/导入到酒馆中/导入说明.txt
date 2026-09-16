@@ -1,0 +1,103 @@
+﻿魔都（魔都精兵：战术指挥端）导入说明
+════════════════════════════════════════
+
+【它是什么】
+把 AI Studio 导出的原项目（Vite + React 19 + Tailwind v4 + motion + lucide-react）
+移植成酒馆助手（Tavern Helper）的「逐楼层 iframe 内嵌 React 单文件应用」。
+
+  楼层文本 → 界面正则替换成代码块 → 酒馆助手提升为 iframe
+           → iframe 内 $('body').load(CDN/本地 上的单文件 index.html)
+
+原项目的界面、交互、动效、文案全部保留（含 mock 剧本与战斗终端演示）。
+
+
+【本次范围（刻意留空的部分）】
+  · 不做 MVU 变量接入
+  · 不做剧本解析（scriptParser）—— 剧本仍是 src/data/story.ts 里的占位数组
+  · 不做世界书写入 / 随机池 / BGM / 小手机
+  即：本次只做「移植 + 骨架 + 沉浸态 + 锁定前端脚本」，其余按原样未动。
+
+【v2 视觉重制（本轮）】
+  开场与游戏内统一为「黑 / 紫 / 粉 / 白」四族色板，色值取自官方素材实证采样
+  （LOGO 内容平均色 #B5426C；主视觉黑 20.9% / 灰白 16.5% / 亮红粉 9.4%
+   / 粉红 12.7% / 暗红棕 10.4% / 紫红 5.8% / 深紫 4.6%）。
+  · 重做：入场页、开场动画、主舞台三层、HUD、对话框、四个弹窗、
+          通知、按钮体系、战斗终端外观（逻辑未动）。
+  · 新增：氛围层（环境光 + 微粒 + 暗角）、官方 LOGO 与主视觉内联。
+  · 详案见 docs/视觉重制方案.md；战斗系统逻辑未改动（属后续工程）。
+
+
+【三个交付件】
+  ① 前端本体        src/魔都/             → 产物 dist/魔都/index.html（单文件内联，约 763 KB，含官方 LOGO 与主视觉内联约 290 KB）
+  ② 界面正则        src/魔都/导入到酒馆中/界面-实时修改.json（本地开发，默认禁用）
+                                        /界面-正式.json（CDN，发布后才启用）
+  ③ 锁定前端脚本    src/魔都-锁定前端/     → 产物 dist/魔都-锁定前端/index.js（约 3.6 KB）
+                    导入件在 src/魔都-锁定前端/导入到酒馆中/（详见该目录的导入说明.txt）
+
+
+【导入步骤】
+  1. 界面正则（扩展 → 酒馆助手 → 正则）
+       · 本地调试：导入「界面-实时修改.json」并【启用】
+         前提：pnpm build:dev 已构建 + node serve.mjs（http://localhost:5500）在跑
+       · 正式使用：先把 dist/魔都/index.html 发布到 CDN，再导入「界面-正式.json」并启用
+         （界面-正式.json 现在默认 disabled —— CDN 上还没有这个文件，直接启用会加载失败）
+  2. 锁定前端脚本（扩展 → 酒馆助手 → 脚本库）
+       导入 src/魔都-锁定前端/导入到酒馆中/脚本-锁定前端-本地内联.json
+  3. 开新聊天，楼层显示层即变成本前端
+
+  ⚠ 正式 JSON 里出现 localhost = 事故（只允许出现在默认禁用的开发正则里）。
+
+
+【沉浸态（伪全屏）怎么用】
+  HUD 右上角「沉浸模式 (IMMERSE)」按钮：
+    · 伪全屏（主路径）——父页把本楼层 .mes 改成 position:fixed 顶满视口、
+      隐藏其他楼层、iframe 撑到 100%，并在 .mes 上打 [data-mato-locked] 标记
+    · 原生全屏（加分项）——同时尝试 requestFullscreen，失败不影响伪全屏
+  退出时先摘标记（锁定脚本据此立刻解锁），再复位样式。
+
+
+【验证清单】
+  ── 本地门（已通过，浏览器直开产物即可复现）──
+  ☑ dist/魔都/index.html 直开不白屏（无头 Edge 实测 #root 渲染 12544 字符）
+  ☑ <head> 第一行有 <meta charset="UTF-8"/>（否则中文 Windows 下整包 SyntaxError 白屏）
+  ☑ 产物以 </body> 收尾、无 localhost、图标 import 全部命中
+  ☑ 本地服务器 http://localhost:5500/dist/魔都/index.html 返回 200 + charset
+
+  ── 真机门（必须在真实酒馆里验，本地验不了）──
+  □ 楼层显示层变成前端 iframe，且提示词里看不到 iframe 代码
+  □ iframe 高度被撑到 800px（桌面）/ 700px（手机），画面不被压扁
+  □ 点「沉浸模式」→ 其他楼层被藏、本楼顶满；console 出现
+      [魔都] 已进入全屏模式（楼层 #N）
+      [魔都·锁定前端] === 楼层 #N 已锁定 ===
+  □ 全屏期间从酒馆 UI 删该楼层 → 删除被静默拒绝，console 出现
+      [魔都·锁定前端] 拦截 jQuery.remove()，保护楼层 #N；画面不白屏
+  □ 退出沉浸态 → 藏楼样式摘除、楼层恢复正常显示、iframe 高度回 800px
+  □ 对照实验：停用锁定脚本重复上一步 → 楼层被删、前端白屏（确认拦截真在工作）
+
+
+【调试入口】
+  前端 iframe console：
+    window.__matoFullscreen        当前是否沉浸态
+  父页 console：
+    window.__matoLock = { lock, unlock, sync, locked }
+    __matoLock.sync()     手动重扫标记（怀疑状态不同步时用）
+    __matoLock.locked     当前锁定的楼层号，未锁定为 null
+    __matoLock.unlock()   强制解锁（排查卡死时用）
+
+
+【构建】
+  ONLY_ENTRY=魔都 pnpm build          # 同时构建前端与锁定前端
+  ONLY_ENTRY=魔都 pnpm build:dev      # 开发模式（不压缩，便于真机断点）
+  pnpm watch                          # 全量监听（会连带构建其他项目）
+  产物：dist/魔都/index.html ｜ dist/魔都-锁定前端/index.js
+
+
+【命名空间】统一 mato 前缀，与幻璃镜（yaugai 前缀）等其它前端共存不打架
+  藏楼样式（前端）  mato-fs-hide
+  藏楼样式（脚本）  mato-lock-floor-style
+  DOM 标记          data-mato-locked
+  window 标志       __matoFullscreen
+  全局句柄          __matoLock / __matoLockCleanup
+  日志前缀          [魔都] / [魔都·锁定前端] / [魔都·TT全屏兼容]
+  正则 scriptName   魔都-实时修改 / 魔都-界面
+  脚本 name         魔都-锁定前端

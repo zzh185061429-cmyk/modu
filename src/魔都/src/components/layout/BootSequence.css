@@ -1,0 +1,118 @@
+/* 纸白载入屏；仅替换外观，保留原有两块裁切与转场时序。 */
+.mato-boot {
+  --boot-paper: var(--mato-paper, #f6f3ef);
+  --boot-ink: var(--mato-ink, #261e29);
+  --boot-muted: var(--mato-muted, #796b70);
+  --boot-red: var(--mato-red, #9d1831);
+  --boot-line: var(--mato-line, #d4c8c7);
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--boot-ink);
+  font-family: var(--font-sans, 'Mato Sans', sans-serif);
+  color-scheme: light;
+  /* 根层保持透明，两块纸面分离后直接露出游戏。 */
+}
+.mato-boot *, .mato-boot *::before, .mato-boot *::after { box-sizing: border-box; }
+.mato-boot__panels, .mato-boot__half, .mato-boot__surface, .mato-boot__fx { position: absolute; inset: 0; }
+.mato-boot__half--upper { clip-path: polygon(0 0, 100% 0, 100% 30.05%, 0 70.05%); }
+.mato-boot__half--lower { clip-path: polygon(0 69.95%, 100% 29.95%, 100% 100%, 0 100%); }
+.mato-boot__surface { overflow: hidden; contain: layout paint; background: var(--boot-paper); }
+.mato-boot__frame { position: absolute; inset: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); border: 1px solid var(--boot-line); pointer-events: none; }
+.mato-boot__frame::before, .mato-boot__frame::after { content: ''; position: absolute; width: 48px; height: 3px; background: var(--boot-red); }
+.mato-boot__frame::before { top: -2px; left: -1px; }
+.mato-boot__frame::after { bottom: -2px; right: -1px; }
+.mato-boot__frame[data-ready='true'] { border-color: var(--boot-red); }
+.mato-boot__watermark { position: absolute; right: 8%; top: 9%; color: transparent; -webkit-text-stroke: 1px var(--boot-line); font-family: var(--font-serif, 'Mato Mincho', 'Noto Serif SC', serif); font-size: clamp(280px, 42vw, 680px); line-height: 1; font-weight: 900; opacity: .5; pointer-events: none; }
+.mato-boot__chain { position: absolute; top: -10%; display: block; width: auto; height: 120%; max-width: 10%; object-fit: contain; pointer-events: none; }
+.mato-boot__chain--left { left: 4%; transform: rotate(-9deg); }
+.mato-boot__chain--right { right: 4%; transform: rotate(9deg); }
+.mato-boot__composition { position: absolute; left: 50%; top: 46%; width: min(560px, 66%); transform: translate(-50%, -50%); text-align: center; }
+.mato-seal { pointer-events: none; }
+.mato-boot__logo { position: relative; margin: 0 auto 24px; width: min(440px, 100%); }
+.mato-boot__logo img { display: block; width: 100%; height: auto; }
+.mato-boot__eyebrow { position: relative; color: var(--boot-red); font-family: var(--font-display, 'Mato Latin', Georgia, serif); font-size: 10px; font-weight: 600; letter-spacing: .28em; line-height: 1.6; }
+.mato-boot__status-area { position: relative; width: min(320px, 100%); height: 68px; margin: 58px auto 0; }
+.mato-boot__progress-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 12px; letter-spacing: .16em; }
+.mato-boot__number { color: var(--boot-red); font-family: var(--font-display, 'Mato Latin', Georgia, serif); font-size: 34px; font-variant-numeric: tabular-nums; letter-spacing: -.03em; line-height: 1; }
+.mato-boot__number small { margin-left: 5px; color: var(--boot-muted); font-size: 12px; }
+.mato-boot__track { height: 2px; margin-top: 16px; background: var(--boot-line); overflow: hidden; }
+.mato-boot__track > div { width: 100%; height: 100%; background: var(--boot-red); transform-origin: left; transition: transform 80ms linear; }
+.mato-boot__action { position: absolute; left: 50%; bottom: max(64px, env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(224px, calc(100% - 64px)); text-align: center; }
+.mato-boot__start { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; min-height: 50px; padding: 12px 24px; border: 1px solid var(--boot-red); border-radius: 0; background: var(--boot-red); color: var(--boot-paper); cursor: pointer; font-family: inherit; font-size: 13px; line-height: 1.5; letter-spacing: .2em; transition: background .2s, border-color .2s; }
+.mato-boot__start > :last-child { font-family: var(--font-serif, 'Mato Mincho', 'Noto Serif SC', serif); font-size: 22px; }
+.mato-boot__start:hover { background: var(--boot-ink); border-color: var(--boot-ink); }
+.mato-boot__start:focus-visible, .mato-boot__skip:focus-visible { outline: 2px solid var(--boot-red); outline-offset: 5px; }
+.mato-boot__command { position: absolute; top: 17%; right: 14%; display: grid; place-items: center; width: 40px; height: 48px; border: 1px solid var(--boot-red); color: var(--boot-red); animation: mato-boot-command 460ms ease-out both; }
+.mato-boot__command > span { font-family: var(--font-serif, 'Mato Mincho', 'Noto Serif SC', serif); font-size: 28px; line-height: 1; }
+.mato-boot__skip { position: absolute; right: max(40px, env(safe-area-inset-right)); bottom: max(38px, env(safe-area-inset-bottom)); z-index: 5; min-height: 44px; padding: 10px 16px; border: 1px solid var(--boot-line); border-radius: 0; background: var(--boot-paper); color: var(--boot-ink); font-family: inherit; font-size: 12px; line-height: 1.5; letter-spacing: .1em; cursor: pointer; }
+.mato-boot__skip:hover { border-color: var(--boot-red); color: var(--boot-red); }
+.mato-boot__fx { pointer-events: none; }
+.mato-boot__slash { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.mato-boot__stroke { stroke-dasharray: 1; stroke-dashoffset: 1; animation: mato-boot-blade 660ms linear both; }
+.mato-boot__stroke--ink { opacity: .55; }
+.mato-boot__stroke--core { animation-delay: 8ms; }
+.mato-boot__wake { transform-origin: 0 70%; animation: mato-boot-wake 380ms ease-out both; }
+.mato-boot__echo { opacity: 0; animation: mato-boot-echo 450ms 70ms ease-out both; }
+.mato-boot__glint { position: absolute; width: 80px; height: 80px; left: 50%; top: 50%; transform: translate(-50%, -50%); animation: mato-boot-glint 360ms 75ms ease-out both; }
+.mato-boot__glint i, .mato-boot__glint b { position: absolute; inset: 0; background: var(--boot-paper); clip-path: polygon(49% 0, 52% 45%, 100% 50%, 52% 53%, 50% 100%, 47% 54%, 0 50%, 47% 46%); }
+.mato-boot__glint b { transform: rotate(45deg) scale(.6); background: var(--boot-line); }
+.mato-boot__impact { position: absolute; inset: 0; background: var(--boot-paper); animation: mato-boot-impact 220ms 95ms linear both; }
+.mato-boot__shard { position: absolute; width: 3px; height: 15px; background: var(--boot-line); border-left: 1px solid var(--boot-paper); clip-path: polygon(0 0, 100% 35%, 75% 100%); opacity: 0; animation: mato-boot-shard 620ms cubic-bezier(.16, 1, .3, 1) both; }
+.mato-boot__shard:nth-of-type(3n) { background: var(--boot-muted); height: 8px; }
+.mato-boot[data-phase='cut'] .mato-boot__half { will-change: transform, opacity; }
+.mato-boot[data-phase='cut'] .mato-boot__half--upper { animation: mato-boot-upper 1250ms 100ms both; }
+.mato-boot[data-phase='cut'] .mato-boot__half--lower { animation: mato-boot-lower 1250ms 100ms both; }
+.mato-boot__sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@keyframes mato-boot-command { 0% { opacity: 0; transform: translateY(5px); } 30%, 90% { opacity: 1; transform: none; } 100% { opacity: .5; } }
+/* 保留原有划开、短暂停顿和两侧分离的节奏。 */
+@keyframes mato-boot-blade { 0% { stroke-dashoffset: 1; opacity: 0; } 2% { opacity: 1; } 17%, 32% { stroke-dashoffset: 0; opacity: 1; } 70% { stroke-dashoffset: 0; opacity: .5; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes mato-boot-wake { 0% { opacity: 0; transform: scaleX(.03); } 28% { opacity: .55; transform: scaleX(1); } 100% { opacity: 0; transform: scaleX(1); } }
+@keyframes mato-boot-echo { 0% { opacity: 0; } 15% { opacity: .55; } 100% { opacity: 0; } }
+@keyframes mato-boot-glint { 0% { opacity: 0; scale: .15; } 16% { opacity: 1; scale: 1.5; } 100% { opacity: 0; scale: .6; } }
+@keyframes mato-boot-impact { 0%, 100% { opacity: 0; } 12% { opacity: .38; } }
+@keyframes mato-boot-upper { 0% { transform: none; opacity: 1; } 9% { transform: translate(-3px, -3px); opacity: 1; animation-timing-function: cubic-bezier(.58, 0, .25, 1); } 78%, 100% { transform: translate(-13%, -108%) rotate(-5deg); opacity: 1; } }
+@keyframes mato-boot-lower { 0% { transform: none; opacity: 1; } 9% { transform: translate(3px, 3px); opacity: 1; animation-timing-function: cubic-bezier(.58, 0, .25, 1); } 84%, 100% { transform: translate(13%, 108%) rotate(5deg); opacity: 1; } }
+@keyframes mato-boot-shard { 0% { transform: translate(0, 0) rotate(-24deg); opacity: 0; } 12% { opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; } }
+@keyframes mato-boot-reduced { from { opacity: 1; } to { opacity: 0; } }
+.mato-boot[data-reduced-motion='true'] .mato-boot__fx, .mato-boot[data-reduced-motion='true'] .mato-boot__command { display: none; }
+.mato-boot[data-reduced-motion='true'][data-phase='cut'] .mato-boot__half { animation: mato-boot-reduced 150ms both; }
+@media (prefers-reduced-motion: reduce) {
+  .mato-boot *, .mato-boot *::before, .mato-boot *::after { transition: none !important; }
+  .mato-boot__fx, .mato-boot__command { display: none; }
+  .mato-boot[data-phase='cut'] .mato-boot__half { animation: mato-boot-reduced 150ms both; }
+}
+@media (max-width: 560px) {
+  .mato-boot__frame { inset: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+  .mato-boot__composition { width: 72%; }
+  .mato-boot__logo { margin-bottom: 20px; }
+  .mato-boot__eyebrow { font-size: 9px; letter-spacing: .14em; }
+  .mato-boot__chain { max-width: 9%; }
+  .mato-boot__chain--left { left: -2%; }
+  .mato-boot__chain--right { right: -2%; }
+  .mato-boot__status-area { margin-top: 42px; }
+  .mato-boot__progress-heading { font-size: 11px; letter-spacing: .08em; }
+  .mato-boot__number { font-size: 30px; }
+  .mato-boot__command { right: 13%; top: 18%; }
+  .mato-boot__skip { right: max(28px, env(safe-area-inset-right)); bottom: max(28px, env(safe-area-inset-bottom)); }
+  .mato-boot__shard:nth-of-type(n+9) { display: none; }
+}
+@media (max-height: 520px) {
+  .mato-boot__composition { top: 42%; width: min(460px, 66%); }
+  .mato-boot__logo { width: min(300px, 72%); margin: 0 auto 12px; }
+  .mato-boot__status-area { height: 52px; margin-top: 20px; }
+  .mato-boot__number { font-size: 28px; }
+  .mato-boot__track { margin-top: 12px; }
+  .mato-boot__action { bottom: max(30px, env(safe-area-inset-bottom)); }
+  .mato-boot__skip { bottom: max(26px, env(safe-area-inset-bottom)); }
+  .mato-boot__command { top: 20%; }
+}
+@media (max-height: 340px) {
+  .mato-boot__composition { top: 38%; }
+  .mato-boot__logo { width: min(200px, 55%); margin-bottom: 8px; }
+  .mato-boot__eyebrow { font-size: 8px; }
+  .mato-boot__status-area { margin-top: 12px; }
+  .mato-boot__action, .mato-boot__skip { bottom: max(20px, env(safe-area-inset-bottom)); }
+}

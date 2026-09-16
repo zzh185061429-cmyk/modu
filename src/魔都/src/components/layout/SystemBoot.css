@@ -1,0 +1,203 @@
+/* 纸白封面；滚轮与触控继续由现有入口生命周期接管。 */
+.mato-entry {
+  --entry-paper: var(--mato-paper, #f6f3ef);
+  --entry-ink: var(--mato-ink, #261e29);
+  --entry-red: var(--mato-red, #9d1831);
+  --entry-line: var(--mato-line, #d4c8c7);
+  --entry-muted: var(--mato-muted, #796b70);
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  isolation: isolate;
+  max-height: 100vh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  touch-action: pan-y;
+  -ms-touch-action: pan-y;
+  background: var(--entry-paper);
+  color: var(--entry-ink);
+  font-family: var(--font-sans, 'Mato Sans', sans-serif);
+  color-scheme: light;
+}
+.mato-entry::-webkit-scrollbar { width: 0; height: 0; }
+.mato-entry *, .mato-entry *::before, .mato-entry *::after { box-sizing: border-box; }
+.mato-entry__sheet {
+  position: relative;
+  flex: 1 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  width: 100%;
+  min-height: 620px;
+}
+.mato-entry__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(42px, 7vh, 84px);
+  min-width: 0;
+  padding: max(48px, env(safe-area-inset-top)) clamp(28px, 4vw, 76px) max(64px, env(safe-area-inset-bottom));
+  padding-left: max(clamp(28px, 4vw, 76px), env(safe-area-inset-left));
+}
+.mato-entry__cover, .mato-entry__form { width: min(100%, 370px); margin-inline: auto; }
+.mato-entry__cover { position: relative; }
+.mato-entry__cover::before {
+  content: '';
+  display: block;
+  width: 34px;
+  height: 4px;
+  margin-bottom: 32px;
+  background: var(--entry-red);
+}
+.mato-entry__logo { position: relative; }
+.mato-entry__logo img { display: block; width: 100%; height: auto; }
+.mato-entry__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  font-family: var(--font-serif, 'Mato Mincho', 'Noto Serif SC', serif);
+}
+.mato-entry__brand {
+  display: block;
+  margin-top: 20px;
+  color: var(--entry-red);
+  font-family: var(--font-display, 'Mato Latin', Georgia, serif);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .25em;
+  line-height: 1.6;
+}
+.mato-entry__form label { display: block; margin-bottom: 10px; font-size: 12px; letter-spacing: .28em; }
+.mato-entry__form input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 52px;
+  padding: 10px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--entry-ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--entry-ink);
+  font-family: var(--font-serif, 'Mato Mincho', 'Noto Serif SC', serif);
+  font-size: 20px;
+  line-height: 1.5;
+  user-select: text;
+  box-shadow: none;
+}
+.mato-entry__form input:focus, .mato-entry__form input[aria-invalid='true'] { border-bottom-color: var(--entry-red); }
+.mato-entry button { cursor: pointer; font-family: inherit; }
+.mato-entry__enter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-height: 54px;
+  margin-top: 26px;
+  padding: 14px 20px;
+  border: 1px solid var(--entry-red);
+  border-radius: 0;
+  background: var(--entry-red);
+  color: var(--entry-paper);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: .2em;
+  box-shadow: none;
+  transition: background .2s, border-color .2s;
+}
+.mato-entry__arrow { position: relative; flex: 0 0 26px; height: 1px; background: currentColor; }
+.mato-entry__arrow::after { content: ''; position: absolute; right: 0; bottom: 0; width: 8px; height: 8px; border-right: 1px solid currentColor; transform: skewX(40deg); transform-origin: right bottom; }
+.mato-entry__enter:hover:not(:disabled) { background: var(--entry-ink); border-color: var(--entry-ink); }
+.mato-entry :disabled { cursor: wait; opacity: .65; }
+.mato-entry input:focus-visible, .mato-entry button:focus-visible { outline: 2px solid var(--entry-red); outline-offset: 4px; }
+.mato-entry__feedback { min-height: 26px; padding-top: 8px; color: var(--entry-muted); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.mato-entry[data-phase='error'] .mato-entry__feedback { color: var(--entry-red); }
+.mato-entry__cancel { min-height: 44px; padding: 8px 0; border: 0; background: transparent; color: var(--entry-red); font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
+.mato-entry__motion {
+  position: absolute;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  left: max(clamp(28px, 4vw, 76px), env(safe-area-inset-left));
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--entry-line);
+  border-radius: 0;
+  background: var(--entry-paper);
+  color: var(--entry-muted);
+}
+.mato-entry__motion span { width: 9px; height: 11px; border-inline: 2px solid currentColor; }
+.mato-entry__motion[aria-pressed='true'] span { width: 0; height: 0; border: 6px solid transparent; border-right: 0; border-left: 9px solid currentColor; }
+.mato-entry__motion:hover { color: var(--entry-red); border-color: currentColor; }
+.mato-entry__portrait { position: relative; min-width: 0; overflow: hidden; isolation: isolate; pointer-events: none; user-select: none; }
+.mato-entry__portrait::before { content: ''; position: absolute; inset: max(28px, env(safe-area-inset-top)) max(34px, env(safe-area-inset-right)) 28px 0; z-index: -1; border: 1px solid var(--entry-red); }
+.mato-entry__portrait::after { content: ''; position: absolute; left: 0; top: 28px; width: 7px; height: 54px; background: var(--entry-red); }
+.mato-entry__seven {
+  position: absolute;
+  left: -1%;
+  top: 14%;
+  z-index: -1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--entry-red);
+  font-family: var(--font-serif, 'Mato Mincho', 'Noto Serif SC', serif);
+  font-size: clamp(300px, 44vw, 760px);
+  font-weight: 900;
+  line-height: 1;
+  opacity: .32;
+}
+/* 立绘从顶端定位，仅允许画幅底部裁去身长，不裁头部。 */
+.mato-entry__hero { position: absolute; top: max(32px, env(safe-area-inset-top)); left: 50%; display: block; width: auto; height: 132%; max-width: none; transform: translateX(-50%); object-fit: contain; object-position: center top; }
+.mato-entry__chains { position: absolute; top: -7%; right: max(8px, env(safe-area-inset-right)); display: block; width: auto; height: 118%; max-width: 15%; object-fit: contain; transform: rotate(7deg); }
+.mato-entry[data-motion-paused='true'] *, .mato-entry[data-motion-paused='true'] *::before, .mato-entry[data-motion-paused='true'] *::after { animation-play-state: paused !important; transition: none !important; }
+.mato-shell { height: 100vh; height: 100dvh; min-height: 0; }
+@media (max-width: 760px) {
+  .mato-entry__sheet { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); min-height: 540px; }
+  .mato-entry__content { gap: 36px; padding-inline: 24px; }
+  .mato-entry__brand { font-size: 9px; letter-spacing: .15em; }
+  .mato-entry__motion { left: max(24px, env(safe-area-inset-left)); }
+  .mato-entry__hero { height: 112%; }
+}
+@media (max-width: 560px) and (orientation: portrait), (max-width: 400px) {
+  .mato-entry__sheet { grid-template-columns: minmax(0, 1fr); min-height: 100%; }
+  .mato-entry__content { display: contents; }
+  .mato-entry__cover { grid-row: 1; width: min(76%, 320px); padding-top: max(28px, env(safe-area-inset-top)); }
+  .mato-entry__cover::before { width: 26px; height: 3px; margin-bottom: 18px; }
+  .mato-entry__brand { margin-top: 12px; }
+  .mato-entry__portrait { grid-row: 2; height: clamp(290px, 47vh, 440px); height: clamp(290px, 47dvh, 440px); margin-top: 20px; margin-inline: 24px; }
+  .mato-entry__portrait::before { inset: 14px 14px 0; }
+  .mato-entry__portrait::after { top: 14px; left: 14px; height: 36px; width: 4px; }
+  .mato-entry__hero { top: 0; left: 52%; height: 184%; }
+  .mato-entry__seven { top: 8%; left: 1%; font-size: clamp(280px, 85vw, 440px); }
+  .mato-entry__chains { right: 6px; height: 145%; max-width: 14%; }
+  .mato-entry__form { grid-row: 3; width: min(calc(100% - 56px), 360px); padding-top: 26px; padding-bottom: max(64px, env(safe-area-inset-bottom)); }
+  .mato-entry__enter { margin-top: 20px; }
+  .mato-entry__motion { left: 28px; bottom: max(14px, env(safe-area-inset-bottom)); }
+}
+@media (max-height: 520px) and (min-width: 401px) and (orientation: landscape) {
+  .mato-entry__sheet { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); min-height: 420px; }
+  .mato-entry__content { gap: 22px; padding: 24px 28px 64px; padding-left: max(28px, env(safe-area-inset-left)); }
+  .mato-entry__cover { max-width: 250px; }
+  .mato-entry__cover::before { margin-bottom: 14px; height: 3px; }
+  .mato-entry__brand { margin-top: 10px; }
+  .mato-entry__form input { height: 44px; }
+  .mato-entry__enter { min-height: 46px; margin-top: 16px; padding-block: 10px; }
+  .mato-entry__motion { left: max(28px, env(safe-area-inset-left)); bottom: 12px; }
+  .mato-entry__hero { top: max(20px, env(safe-area-inset-top)); height: 145%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mato-entry *, .mato-entry *::before, .mato-entry *::after { animation: none !important; transition: none !important; }
+}

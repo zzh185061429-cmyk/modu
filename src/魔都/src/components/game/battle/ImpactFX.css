@@ -1,0 +1,264 @@
+/* 命中特效
+ *
+ * 设计原则（这一版是推倒重来的结果）：
+ *   **不要加色柔光。** 上一版是"白色放射线 + 网点 + 柔光贴图 + screen 混合"，
+ *   读出来是手游打击光效——没有黑色、没有硬边、没有方向。
+ *   这一版全部换成硬层：纯白实线、不透明切割线、真序列帧扫击。
+ *
+ * 三个实现约定：
+ *   ① 居中与旋转用 `translate` / `rotate` / `scale` **独立属性**，
+ *      不写 `transform`。动画里要改 rotate/scale，混进 transform 会互相覆盖。
+ *   ② 定格烤在关键帧的 7%→22% 保持段里，不做全局暂停。
+ *   ③ 只有序列帧与冲击波允许 `mix-blend-mode: screen`（它们是光），
+ *      硬线与数字一律不混色，否则对比度立刻塌掉。
+ */
+
+.mato-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* 命中点：躯干上部，不是几何中心 */
+  --fx-oy: 42%;
+}
+
+/* ── 主角：13 帧真序列帧扫击 ──
+   strip 横向排了 13 帧，所以图片宽度是元素宽度的 13 倍（background-size: 1300%）。
+   background-position-x 的百分比 p 对应的实际偏移是 p/100 × (C − 13C) = −p·0.12C，
+   要落在第 k 帧（偏移 −kC）就需要 p = k × 100/12。
+   于是 13 帧对应 p = 0, 8.333, …, 100 —— 共 12 个间隔。
+   用 steps(13, end) 走完这 12 个间隔，末值要写成 108.333% 而不是 100%：
+   写 100% 的话 steps 的最后一格只到第 12 帧，**最后一帧永远不会显示**（经典差一错误）。 */
+.mato-fx__sweep {
+  position: absolute;
+  left: 50%;
+  top: var(--fx-oy);
+  width: 205%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  rotate: var(--fx-angle);
+  background-image: var(--fx-sweep);
+  background-repeat: no-repeat;
+  background-size: 1300% 100%;
+  background-position-x: 0%;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 12px #ff2f5eaa);
+  animation: mato-fx-sweep var(--fx-sweep-ms, 429ms) steps(13, end) both;
+}
+@keyframes mato-fx-sweep {
+  from {
+    background-position-x: 0%;
+  }
+  to {
+    background-position-x: 108.3333%;
+  }
+}
+
+/* ── 刀口：3px 纯白硬线 + 暗红衬底 ── */
+.mato-fx__cut {
+  position: absolute;
+  left: 50%;
+  top: var(--fx-oy);
+  width: 215%;
+  height: 3px;
+  translate: -50% -50%;
+  rotate: var(--fx-angle);
+  background: #fff;
+  box-shadow:
+    0 3px 0 #9d1831,
+    0 0 10px #ffffffcc;
+  animation: mato-fx-cut 0.42s cubic-bezier(0.16, 0.9, 0.2, 1) both;
+}
+@keyframes mato-fx-cut {
+  0% {
+    opacity: 0;
+    scale: 0.08 1;
+  }
+  7% {
+    opacity: 1;
+    scale: 1 1;
+  }
+  22% {
+    opacity: 1;
+    scale: 1 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.12 1;
+  }
+}
+
+/* ── 硬速度线：2px 不透明实线，只有 6 条 ──
+   上一版用 repeating-conic-gradient 铺满一圈再加个柔光遮罩，那是"光晕"；
+   这里是实线，条数少、对比高。 */
+.mato-fx__streak {
+  position: absolute;
+  left: 50%;
+  top: var(--fx-oy);
+  width: 200%;
+  height: 2px;
+  translate: -50% -50%;
+  rotate: calc(var(--a, 0deg) + var(--fx-angle));
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #fff 40%,
+    #fff 60%,
+    transparent 100%
+  );
+  animation: mato-fx-streak 0.3s ease-out both;
+}
+@keyframes mato-fx-streak {
+  0% {
+    opacity: 0;
+    scale: 0.16 1;
+  }
+  8% {
+    opacity: 1;
+    scale: 1 1;
+  }
+  24% {
+    opacity: 1;
+    scale: 1.04 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.5 1;
+  }
+}
+
+/* ── 冲击波：细环 ── */
+.mato-fx__ring {
+  position: absolute;
+  left: 50%;
+  top: var(--fx-oy);
+  width: 165%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: #fff;
+  -webkit-mask-image: var(--fx-ring);
+  mask-image: var(--fx-ring);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  mix-blend-mode: screen;
+  animation: mato-fx-ring 0.46s cubic-bezier(0.1, 0.8, 0.2, 1) both;
+}
+@keyframes mato-fx-ring {
+  0% {
+    opacity: 0;
+    scale: 0.22;
+  }
+  6% {
+    opacity: 0.95;
+    scale: 0.86;
+  }
+  20% {
+    opacity: 0.9;
+    scale: 0.9;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.28;
+  }
+}
+
+/* ── 强袭签名：三道刮痕（实色 mask） ── */
+.mato-fx__claw {
+  position: absolute;
+  left: 50%;
+  top: var(--fx-oy);
+  width: 190%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  rotate: var(--fx-angle);
+  background: #fff;
+  -webkit-mask-image: var(--fx-claw);
+  mask-image: var(--fx-claw);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  filter: drop-shadow(0 0 14px #e0234acc);
+  animation: mato-fx-claw 0.58s cubic-bezier(0.14, 0.92, 0.2, 1) both;
+}
+@keyframes mato-fx-claw {
+  0% {
+    opacity: 0;
+    scale: 0.5;
+  }
+  8% {
+    opacity: 1;
+    scale: 1.06;
+  }
+  26% {
+    opacity: 1;
+    scale: 1.02;
+  }
+  74% {
+    opacity: 0.65;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.2;
+  }
+}
+
+/* ── 伤害数字：硬字，**不参与混色** ──
+   上一版把它裹进根节点的 mix-blend-mode，白字被 screen 混成发黄糊块。
+   数字是信息，对比度不能拿去做美术。 */
+.mato-fx__damage {
+  position: absolute;
+  left: 54%;
+  top: 6%;
+  font: 900 clamp(30px, 4.2vw, 58px) / 1 var(--font-sans);
+  color: #fff;
+  letter-spacing: -0.02em;
+  /* 描边用**近黑**不用品牌红：红描边压在红色扫击上等于没有对比度。
+     白填充 + 黑描边在任何底色上都读得出来。 */
+  -webkit-text-stroke: 3px #0b080a;
+  text-shadow:
+    0 3px 0 #9d1831,
+    0 10px 24px #000000e6;
+  transform: skewX(-11deg);
+  animation: mato-fx-damage 0.82s cubic-bezier(0.2, 1.45, 0.4, 1) both;
+}
+@keyframes mato-fx-damage {
+  0% {
+    opacity: 0;
+    transform: skewX(-11deg) translateY(24px) scale(0.34);
+  }
+  6% {
+    opacity: 1;
+    transform: skewX(-11deg) translateY(0) scale(1.3);
+  }
+  20% {
+    opacity: 1;
+    transform: skewX(-11deg) scale(1.24);
+  }
+  34% {
+    transform: skewX(-11deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: skewX(-11deg) translateY(-46px) scale(1);
+  }
+}
+
+/* 解放：同一套层，扫击放大一档 */
+.mato-fx[data-kind='release'] .mato-fx__sweep {
+  width: 300%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mato-fx__sweep,
+  .mato-fx__cut,
+  .mato-fx__streak,
+  .mato-fx__ring,
+  .mato-fx__claw {
+    animation: none;
+    opacity: 0;
+  }
+  /* 数字仍然要看得见——它是信息，不是特效 */
+  .mato-fx__damage {
+    animation: none;
+    opacity: 1;
+    transform: skewX(-11deg);
+  }
+}

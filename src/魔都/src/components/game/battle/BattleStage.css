@@ -1,0 +1,674 @@
+/* 战斗舞台（S1：空间与投影）
+ *
+ * 这里只管"长什么样"。所有定位数值（left / bottom / height / blur）都由
+ * stage.ts 的投影内联给出，所以竖屏、横屏、矮屏共用同一套规则——**一条媒体查询
+ * 都不需要**，比例差异全在相机公式里消化掉了。
+ *
+ * `--bs-hud` 由 .mato-battle 按断点给（HUD 占掉的高度），舞台盒必须扣掉它，
+ * 否则最前排的脚会落到 HUD 底下。
+ * `--bs-horizon` 由组件内联写入（投影算出来的地平线位置）。
+ */
+
+.mato-bs {
+  position: absolute;
+  inset: 0 0 var(--bs-hud, 146px) 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0b080a;
+}
+
+/* ── L0 天空 + 天际线 ── */
+.mato-bs__sky {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: var(--bs-horizon);
+  background:
+    radial-gradient(ellipse 70% 92% at 64% 100%, #9d183133 0%, transparent 70%),
+    radial-gradient(ellipse 92% 72% at 16% 6%, #6e536933 0%, transparent 72%),
+    linear-gradient(to bottom, #0b080a 0%, #150a10 58%, #240d16 100%);
+}
+.mato-bs__skyline {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  bottom: 0;
+  width: 108%;
+  height: 66%;
+  fill: #060407;
+  opacity: 0.94;
+}
+.mato-bs__haze {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 38%;
+  background: linear-gradient(to top, #9d18312e, transparent);
+}
+
+/* ── L1 地平线：整张画面唯一的"无限远"参照 ── */
+.mato-bs__horizon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--bs-horizon);
+  height: 1px;
+  z-index: 2;
+  background: linear-gradient(90deg, transparent, #e0234a80 22%, #ff8ea5cc 50%, #e0234a80 78%, transparent);
+  box-shadow: 0 0 24px 2px #9d183159;
+}
+
+/* ── L2 地面 ── */
+.mato-bs__ground {
+  position: absolute;
+  inset: var(--bs-horizon) 0 0 0;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #140b11 0%, #0d070a 44%, #080507 100%);
+}
+/* 地平线附近压一层雾：远处是"化掉"的，不是硬切一条线 */
+.mato-bs__ground::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 30%;
+  pointer-events: none;
+  background: linear-gradient(to bottom, #9d183133, transparent);
+}
+.mato-bs__grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.mato-bs__grid line {
+  stroke: #e0234a;
+  stroke-width: 1;
+  /* 纵线要能读出"地面在往远处收"，太淡就等于没有地面；
+     同时压住上限，免得变成霓虹网格抢戏。 */
+  opacity: 0.17;
+}
+
+/* ── L3 敌方阵 ── */
+.mato-bs__enemies,
+.mato-bs__party {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mato-bs__enemy-anchor {
+  position: absolute;
+  inset: 0;
+}
+/* 定位层：只负责居中与纵深，不参与任何动画。
+   它是一个按钮——点谁就锁定谁。 */
+.mato-bs__enemy {
+  position: absolute;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.mato-bs__enemy:disabled {
+  cursor: default;
+}
+/* 锁定框：**四角括号**，不是整个方框。
+   早先是一圈 border 的矩形，做出来像个白方框套在敌人身上，很廉价也很碍眼。
+   打游戏的人不需要被"框住"，只需要知道"锁的是它"——四角 + 顶部一个指示菱形就够。 */
+.mato-bs__reticle {
+  position: absolute;
+  inset: -7% -11%;
+  pointer-events: none;
+  animation: mato-bs-reticle 1.5s ease-in-out infinite;
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(#e0234a, #e0234a),
+    linear-gradient(#e0234a, #e0234a),
+    linear-gradient(#e0234a, #e0234a),
+    linear-gradient(#e0234a, #e0234a),
+    linear-gradient(#e0234a, #e0234a),
+    linear-gradient(#e0234a, #e0234a),
+    linear-gradient(#e0234a, #e0234a),
+    linear-gradient(#e0234a, #e0234a);
+  background-size:
+    18% 2px,
+    2px 18%,
+    18% 2px,
+    2px 18%,
+    18% 2px,
+    2px 18%,
+    18% 2px,
+    2px 18%;
+  background-position:
+    left top,
+    left top,
+    right top,
+    right top,
+    left bottom,
+    left bottom,
+    right bottom,
+    right bottom;
+  filter: drop-shadow(0 0 6px #9d1831cc);
+}
+/* 顶部只留一个指示菱形（原来上下各一个，底部那个纯属多余） */
+.mato-bs__reticle::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  width: 9px;
+  height: 9px;
+  transform: translateX(-50%) rotate(45deg);
+  background: var(--mato-red);
+  box-shadow: 0 0 12px #9d1831cc;
+}
+@keyframes mato-bs-reticle {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+/* 舞台上的按钮是"人物/怪物"这种不规则大目标，套一圈矩形 outline 就是那个白方框。
+   键盘可达性靠名条高亮与锁定括号来表达，不用 outline。 */
+.mato-bs__enemy:focus-visible,
+.mato-bs__unit:focus-visible {
+  outline: none;
+}
+.mato-bs__enemy:focus-visible .mato-bs__enemy-plate b,
+.mato-bs__unit:focus-visible .mato-bs__unit-plate b {
+  color: #fff;
+  text-shadow: 0 0 12px #ff8ea5;
+}
+.mato-bs__enemy-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -1%;
+  width: 62%;
+  height: 6%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #000000e0 0%, transparent 72%);
+  filter: blur(3px);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+/* ── 命中推镜（S4）──
+   整层按**目标所在位置**为原点放大一下，读起来就是镜头朝目标顶了一下。
+   换 tick 的奇偶来重放：直接换 key 会让整个舞台重挂，ResizeObserver 和全部动画都要重来。 */
+.mato-bs__punch {
+  position: absolute;
+  inset: 0;
+  transform-origin: var(--punch-x, 50%) 42%;
+}
+.mato-bs__punch[data-punch='0'] {
+  animation: mato-bs-punch-a 0.42s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.mato-bs__punch[data-punch='1'] {
+  animation: mato-bs-punch-b 0.42s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+/* 8%→26% 是定格窗口（hit-stop） */
+@keyframes mato-bs-punch-a {
+  0% {
+    transform: scale(1);
+  }
+  8% {
+    transform: scale(1.058);
+  }
+  26% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes mato-bs-punch-b {
+  0% {
+    transform: scale(1);
+  }
+  8% {
+    transform: scale(1.058);
+  }
+  26% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ── 敌方入场与受击：**必须分两层** ──
+   挂同一元素上时，切换 data-hit 会把 animation 整个换掉；
+   受击结束摘掉 data-hit，入场动画就被从头重播一遍，敌人无故闪一下。 */
+.mato-bs__enemy-enter {
+  position: relative;
+  height: 100%;
+  animation: mato-bs-enemy-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@keyframes mato-bs-enemy-in {
+  from {
+    opacity: 0;
+    transform: translate(18px, -16px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.mato-bs__enemy-body {
+  position: relative;
+  height: 100%;
+}
+.mato-bs__enemy-body[data-hit='0'] {
+  animation: mato-bs-enemy-hit-a 0.34s ease-out;
+}
+.mato-bs__enemy-body[data-hit='1'] {
+  animation: mato-bs-enemy-hit-b 0.34s ease-out;
+}
+@keyframes mato-bs-enemy-hit-a {
+  0% {
+    transform: none;
+  }
+  8% {
+    transform: translateX(-11px);
+    filter: brightness(3) saturate(0);
+  }
+  26% {
+    transform: translateX(-9px);
+    filter: brightness(2.4) saturate(0);
+  }
+  58% {
+    transform: translateX(6px);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes mato-bs-enemy-hit-b {
+  0% {
+    transform: none;
+  }
+  8% {
+    transform: translateX(-11px);
+    filter: brightness(3) saturate(0);
+  }
+  26% {
+    transform: translateX(-9px);
+    filter: brightness(2.4) saturate(0);
+  }
+  58% {
+    transform: translateX(6px);
+  }
+  100% {
+    transform: none;
+  }
+}
+.mato-bs__enemy-body img {
+  display: block;
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 30px #000000b8);
+}
+
+/* 敌方立绘资产待定：程序化暗影生物是 S3 的事，这里先给"能站住"的占位 */
+.mato-bs__shade {
+  display: block;
+  height: 100%;
+  aspect-ratio: 2 / 3;
+  background:
+    radial-gradient(ellipse at 46% 78%, var(--shade-a, #9d1831f2) 0%, var(--shade-b, #9d183188) 44%, transparent 76%),
+    radial-gradient(circle at 38% 30%, var(--shade-c, #e0234a8c) 0%, transparent 46%);
+  clip-path: polygon(52% 0%, 70% 12%, 84% 30%, 86% 52%, 97% 84%, 76% 79%, 64% 97%, 40% 95%, 28% 78%, 3% 86%, 13% 54%, 20% 28%, 34% 11%);
+  filter: blur(0.7px) drop-shadow(0 14px 26px #000000b8);
+  animation: mato-bs-breathe 3.4s ease-in-out infinite;
+}
+@keyframes mato-bs-breathe {
+  0%,
+  100% {
+    opacity: 0.78;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.035);
+  }
+}
+/* 威胁等级只换色相，不换形状——形状归 S3 的程序化生成器 */
+.mato-bs__shade[data-threat='low'] {
+  --shade-a: #9d1831f2;
+  --shade-b: #9d183188;
+  --shade-c: #e0234a8c;
+}
+.mato-bs__shade[data-threat='mid'] {
+  --shade-a: #8f1c46f2;
+  --shade-b: #8f1c4688;
+  --shade-c: #d42a728c;
+}
+.mato-bs__shade[data-threat='high'] {
+  --shade-a: #6d1a4ef2;
+  --shade-b: #6d1a4e8c;
+  --shade-c: #b83a868c;
+}
+.mato-bs__shade[data-threat='boss'] {
+  --shade-a: #5a1030f7;
+  --shade-b: #5a10309c;
+  --shade-c: #ff2f5e9c;
+}
+
+/* 名条：屏幕空间，字号不随纵深变，而且**必须压在前景遮挡之上**——
+   遮挡层是"镜头在人堆里"的氛围，不能把角色的名字吃掉。 */
+.mato-bs__enemy-plate {
+  position: absolute;
+  z-index: 980;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding-bottom: 8px;
+  transform: translate(-50%, -100%);
+  text-align: center;
+  pointer-events: none;
+  animation: mato-bs-plate-in 0.42s ease-out both;
+}
+@keyframes mato-bs-plate-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -100%) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
+}
+.mato-bs__threat {
+  padding: 2px 10px;
+  background: var(--mato-red);
+  color: #fff;
+  font: 700 9px/1.5 var(--font-sans);
+  letter-spacing: 0.28em;
+  transform: skewX(-10deg);
+}
+/* 非锁定目标：小一号、暗一档，只报名字与残血 —— 够你比较该打谁 */
+.mato-bs__enemy-plate b {
+  font: 700 11px/1.2 var(--font-sans);
+  letter-spacing: 0.06em;
+  text-shadow: 0 3px 14px #000;
+}
+.mato-bs__enemy-plate[data-target] {
+  opacity: 1;
+}
+.mato-bs__enemy-plate[data-target] b {
+  font: 800 clamp(13px, 1.5vw, 19px) / 1.15 var(--font-sans);
+  letter-spacing: 0.1em;
+  transform: skewX(-8deg);
+}
+/* 倒下的敌人不该还挂着名牌。
+   ⚠️ 这里必须用**另一个动画**淡出，不能直接写 opacity —— 名条带着 fill-mode: both 的
+   入场动画，动画的终值会盖掉普通声明（和 transform 那个坑是同一类）。
+   等 S3 做了暗影碎裂，这里换成"随碎片一起散掉"。 */
+.mato-bs__enemy-plate[data-down] {
+  animation: mato-bs-plate-out 0.4s ease-in forwards;
+}
+@keyframes mato-bs-plate-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+/* 躯干塌下去：压扁 + 沉入地面 + 淡出 */
+.mato-bs__enemy[data-down] .mato-bs__enemy-body {
+  animation: mato-bs-enemy-down 0.55s cubic-bezier(0.3, 0.8, 0.3, 1) forwards;
+}
+@keyframes mato-bs-enemy-down {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(16%) scale(0.72, 0.46) skewX(10deg);
+  }
+}
+.mato-bs__enemy[data-down] .mato-bs__enemy-shadow {
+  opacity: 0;
+}
+.mato-bs__hp {
+  position: relative;
+  width: 46px;
+  height: 3px;
+  overflow: hidden;
+  background: #ffffff1f;
+}
+.mato-bs__hp i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #e0234a, #9d1831);
+  transition: width 0.32s ease;
+}
+/* 锁定目标的血条才值得占地方：加宽、倾斜、报数值 */
+.mato-bs__enemy-plate[data-target] .mato-bs__hp {
+  width: min(190px, 22vw);
+  height: 9px;
+  background: #ffffff14;
+  border: 1px solid #ffffff2e;
+  transform: skewX(-12deg);
+}
+.mato-bs__hp em {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%) skewX(12deg);
+  font: 700 9px/1 var(--font-sans);
+  font-style: normal;
+}
+
+/* ── L4 我方阵 ── */
+.mato-bs__unit {
+  position: absolute;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.mato-bs__unit:disabled {
+  cursor: not-allowed;
+}
+.mato-bs__unit[data-active='true'] {
+  cursor: default;
+}
+.mato-bs__unit-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -1%;
+  width: 62%;
+  height: 2.4%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #000000e0 0%, transparent 72%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+/* 突进层：单独一层——下面 sprite 上挂着镜像 transform，不能和动画共用同一个元素 */
+.mato-bs__lunge {
+  display: block;
+  height: 100%;
+}
+.mato-bs__lunge[data-lunge='0'] {
+  animation: mato-bs-lunge-a 0.5s cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+.mato-bs__lunge[data-lunge='1'] {
+  animation: mato-bs-lunge-b 0.5s cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+/* 6% 蓄力后仰 → 22% 接触 → 36% 定格 → 收势。突进方向由 --lunge-x/y 现算 */
+@keyframes mato-bs-lunge-a {
+  0% {
+    transform: none;
+  }
+  6% {
+    transform: translate(calc(var(--lunge-x, 64%) * -0.22), calc(var(--lunge-y, -26%) * -0.4));
+  }
+  22% {
+    transform: translate(var(--lunge-x, 64%), var(--lunge-y, -26%));
+  }
+  36% {
+    transform: translate(var(--lunge-x, 64%), var(--lunge-y, -26%));
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes mato-bs-lunge-b {
+  0% {
+    transform: none;
+  }
+  6% {
+    transform: translate(calc(var(--lunge-x, 64%) * -0.22), calc(var(--lunge-y, -26%) * -0.4));
+  }
+  22% {
+    transform: translate(var(--lunge-x, 64%), var(--lunge-y, -26%));
+  }
+  36% {
+    transform: translate(var(--lunge-x, 64%), var(--lunge-y, -26%));
+  }
+  100% {
+    transform: none;
+  }
+}
+.mato-bs__sprite {
+  display: block;
+  height: 100%;
+  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.mato-bs__sprite[data-mirror='true'] {
+  transform: scaleX(-1);
+}
+.mato-bs__sprite img {
+  display: block;
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 20px 32px #000000cc);
+  transition:
+    transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
+    filter 0.22s;
+}
+.mato-bs__unit[data-active='true'] .mato-bs__sprite img {
+  transform: scale(1.035);
+  filter: drop-shadow(0 22px 34px #000000dd) drop-shadow(0 0 26px #9d183180);
+}
+.mato-bs__unit:hover:not(:disabled):not([data-active='true']) .mato-bs__sprite img {
+  transform: translateY(-3px);
+  filter: drop-shadow(0 22px 34px #000000dd) drop-shadow(0 0 18px #ffffff26);
+}
+.mato-bs__unit[data-down='true'] .mato-bs__sprite {
+  filter: grayscale(0.85);
+}
+
+/* 名条贴着脚底，激活者给一块斜切红牌 */
+.mato-bs__unit-plate {
+  position: absolute;
+  z-index: 980;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transform: translate(-50%, 6px);
+  pointer-events: none;
+}
+.mato-bs__unit-plate b {
+  font: 700 11px/1.3 var(--font-sans);
+  letter-spacing: 0.08em;
+  color: #cbbfc4;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px #000;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+.mato-bs__unit-plate[data-active='true'] b {
+  padding: 3px 12px;
+  background: var(--mato-red);
+  color: #fff;
+  font-size: 13px;
+  transform: skewX(-8deg);
+  box-shadow: 0 0 18px #9d183199;
+}
+.mato-bs__unit-plate[data-down='true'] {
+  opacity: 0.4;
+}
+.mato-bs__unit-hp {
+  width: 46px;
+  height: 2px;
+  background: #ffffff1f;
+}
+.mato-bs__unit-hp i {
+  display: block;
+  height: 100%;
+  background: #7fd1a6;
+  transition: width 0.3s;
+}
+
+/* 命中特效自带根节点（见 ImpactFX.css），这里不再需要容器规则 */
+
+/* ── L5 前景遮挡 ──
+   只有真正靠下缘的一小条是实的，其余快速淡出——它是氛围，不是遮罩。
+   z-index 卡在"单位之上、名条之下"，所以它能切过角色的腿，但吃不到名字。 */
+.mato-bs__foreground {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 20%;
+  z-index: 950;
+  overflow: hidden;
+  pointer-events: none;
+}
+.mato-bs__foreground span {
+  position: absolute;
+  bottom: 0;
+}
+.mato-bs__foreground span:first-child {
+  left: -8%;
+  width: 46%;
+  height: 100%;
+  transform: skewX(14deg);
+  background: linear-gradient(to top, #050305 0%, #05030580 34%, #05030500 100%);
+}
+.mato-bs__foreground span:last-child {
+  right: -10%;
+  width: 52%;
+  height: 78%;
+  transform: skewX(-11deg);
+  background: linear-gradient(to top, #050305 0%, #05030566 40%, #05030500 100%);
+}
+
+/* 竖屏：敌方阵挤成一团，非锁定目标的名条会互相压叠——只留锁定那张 */
+@media (max-width: 700px) {
+  .mato-bs__enemy-plate:not([data-target]) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mato-bs__enemy-body,
+  .mato-bs__shade,
+  .mato-bs__enemy-plate {
+    animation: none;
+  }
+  .mato-bs__sprite,
+  .mato-bs__sprite img,
+  .mato-bs__unit-plate b,
+  .mato-bs__hp i,
+  .mato-bs__unit-hp i {
+    transition: none;
+  }
+}

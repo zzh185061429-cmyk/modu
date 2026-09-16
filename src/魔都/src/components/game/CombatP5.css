@@ -1,0 +1,297 @@
+/* 战斗场景外壳
+ *
+ * 空间与构图全部搬去了 `battle/stage.ts`（投影）+ `battle/formation.ts`（编队）
+ * + `battle/BattleStage.css`（分层外观）。这里只剩两类东西：
+ *   ① 屏幕空间的行动区（HUD）—— 不参与投影，尺寸不随纵深变
+ *   ② 打击特效（斩击线 / 伤害数字）—— S4 会换成整条剪辑
+ *
+ * `--bs-hud` 是舞台与 HUD 的唯一契约：舞台盒扣掉它，HUD 占住它。
+ * 两处各写一个数字迟早会对不上，所以只留一个来源。
+ */
+
+.mato-battle {
+  --bs-hud: 146px;
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0b080a;
+  color: #f6f3ef;
+  font-family: var(--font-sans);
+  animation: mato-battle-in 0.32s ease-out both;
+}
+@keyframes mato-battle-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 暗角：把视线收拢到地平线那一带 */
+.mato-battle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 700;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 62% 52% at 50% 46%, transparent 0%, #0000008a 100%),
+    linear-gradient(to bottom, #00000073 0%, transparent 22%, transparent 62%, #000000a6 100%);
+}
+
+/* 屏幕震动（打击感）—— 只作用在内层，别碰根节点的入场动画 */
+.mato-battle__inner {
+  position: absolute;
+  inset: 0;
+}
+.mato-battle__inner[data-shake='true'] {
+  animation: mato-shake 0.3s ease-out;
+}
+@keyframes mato-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  16% {
+    transform: translate(-8px, 5px);
+  }
+  34% {
+    transform: translate(7px, -4px);
+  }
+  52% {
+    transform: translate(-5px, -3px);
+  }
+  74% {
+    transform: translate(3px, 2px);
+  }
+}
+
+/* 打击演出（斩击弧光 / 速度线 / 网点 / 伤害数字）已经搬去 `battle/ImpactFX.css`。
+   原来那套"一条渐变当斩击线 + 一个数字"是纯占位——它的问题不是简陋，
+   而是它跟人物动作同一帧起，读起来像贴纸而不是打击。 */
+
+/* ── 底部行动区 ── */
+.mato-battle__hud {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 800;
+  height: var(--bs-hud);
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2.4vw, 34px);
+  padding: 14px clamp(16px, 3vw, 44px);
+  background: linear-gradient(to top, #0b080a 0%, #0b080af5 62%, #0b080a00 100%);
+  border-top: 1px solid #9d183166;
+}
+.mato-battle__turn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.mato-battle__round {
+  font: 800 15px/1 var(--font-sans);
+  letter-spacing: 0.2em;
+  transform: skewX(-7deg);
+}
+.mato-battle__ap,
+.mato-battle__sync {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.mato-battle__ap small,
+.mato-battle__sync small {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #a99ba1;
+}
+.mato-battle__pips {
+  display: flex;
+  gap: 6px;
+}
+.mato-battle__pips i {
+  width: 13px;
+  height: 13px;
+  transform: rotate(45deg) skewX(-8deg);
+  background: #ffffff14;
+  border: 1px solid #ffffff3d;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.mato-battle__pips i[data-filled='true'] {
+  background: var(--mato-red);
+  border-color: #ff8ea5;
+  box-shadow: 0 0 12px #9d1831b3;
+}
+.mato-battle__sync-bar {
+  width: 96px;
+  height: 4px;
+  background: #ffffff1a;
+}
+.mato-battle__sync-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #6e5369, #e0234a);
+  transition: width 0.3s;
+}
+/* 接力层数：点场上的人换手之后，得有个地方告诉你加成叠到几层了 */
+.mato-battle__baton {
+  align-self: flex-start;
+  padding: 3px 10px;
+  background: #fff;
+  color: var(--mato-red);
+  font: 800 11px/1.4 var(--font-sans);
+  font-style: normal;
+  letter-spacing: 0.16em;
+  transform: skewX(-8deg);
+  box-shadow: 0 0 16px #ffffff66;
+  animation: mato-baton-pop 0.3s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+@keyframes mato-baton-pop {
+  from {
+    transform: skewX(-8deg) scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: skewX(-8deg) scale(1);
+    opacity: 1;
+  }
+}
+.mato-battle__log {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font: 600 clamp(13px, 1.4vw, 17px) / 1.5 var(--font-serif);
+  letter-spacing: 0.08em;
+}
+
+.mato-battle__commands {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.mato-battle__cmd {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-height: 54px;
+  padding: 8px 20px;
+  border: 1px solid #ffffff26;
+  background: #ffffff0d;
+  color: #f6f3ef;
+  transform: skewX(-9deg);
+  transition:
+    background 0.16s,
+    border-color 0.16s,
+    transform 0.16s;
+}
+.mato-battle__cmd > * {
+  transform: skewX(9deg);
+}
+.mato-battle__cmd span {
+  font: 700 15px/1.1 var(--font-sans);
+  letter-spacing: 0.14em;
+}
+.mato-battle__cmd small {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: #a99ba1;
+}
+.mato-battle__cmd:hover:not(:disabled) {
+  background: var(--mato-red);
+  border-color: #fff;
+  transform: skewX(-9deg) translateY(-2px);
+}
+.mato-battle__cmd:hover:not(:disabled) small {
+  color: #ffd9e2;
+}
+.mato-battle__cmd:disabled {
+  opacity: 0.34;
+  cursor: not-allowed;
+}
+.mato-battle__cmd--primary {
+  background: var(--mato-red);
+  border-color: #fff;
+}
+.mato-battle__cmd--transform {
+  border-color: #9d183199;
+}
+.mato-battle__cmd--exit {
+  margin-left: auto;
+}
+
+/* ── 窄屏：HUD 竖排，舞台自动退到上方 ── */
+@media (max-width: 700px) {
+  .mato-battle {
+    --bs-hud: 196px;
+  }
+  .mato-battle__hud {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 9px;
+    padding-block: 10px;
+  }
+  .mato-battle__turn {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+  .mato-battle__commands {
+    flex-wrap: wrap;
+  }
+  .mato-battle__cmd {
+    flex: 1 1 auto;
+    align-items: center;
+    min-height: 46px;
+    padding: 7px 12px;
+  }
+  .mato-battle__cmd small {
+    display: none;
+  }
+  .mato-battle__cmd--exit {
+    margin-left: 0;
+  }
+  .mato-battle__log {
+    font-size: 12px;
+  }
+}
+
+/* ── 矮屏（桌面横屏）：压扁但不改构图轴 ── */
+@media (max-height: 500px) {
+  .mato-battle {
+    --bs-hud: 104px;
+  }
+  .mato-battle__hud {
+    padding-block: 8px;
+  }
+  .mato-battle__cmd {
+    min-height: 42px;
+    padding: 5px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mato-battle,
+  .mato-battle__slash,
+  .mato-battle__damage,
+  .mato-battle__baton {
+    animation: none;
+  }
+  .mato-battle__inner[data-shake='true'] {
+    animation: none;
+  }
+  .mato-battle__pips i,
+  .mato-battle__cmd {
+    transition: none;
+  }
+}

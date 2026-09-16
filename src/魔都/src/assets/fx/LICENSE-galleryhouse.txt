@@ -1,0 +1,25 @@
+素材来源与授权
+================================================================
+
+A) Kenney Particle Pack
+   https://kenney.nl/assets/particle-pack
+   License: Creative Commons Zero (CC0 1.0)
+   http://creativecommons.org/publicdomain/zero/1.0/
+   可商用、可修改、无需署名。
+   本目录下由它派生的文件：ring-a.png, claw.png, LICENSE-kenney-particle-pack.txt
+
+B) フリー素材サイトギャラリーハウス
+   「赤い斬撃エフェクトAPNGアニメーション【商用可・フリー素材】」
+   https://tokidokiame.com/galleryhouse/?p=8952
+   原文件：zangeki2-apng.png（1080x1080 / 13 帧 / 429ms / RGBA）
+   本目录下由它派生的文件：slash-sweep.png（横向 strip，384px 一帧）
+
+   条款要点（原文见项目文档引用）：
+     - 个人 / 法人 / 商用 / 非商用 均可使用
+     - 作为**作品的一部分**使用可以；把素材本身拿到别的素材站再配布或贩卖禁止
+     - 加工自由
+     - クレジット表記不要（不强制署名）
+     - **禁止直链，必须下载后使用**
+     - 禁止用于公序良俗に反する目的 / 反社会的 / 過激な性表現 / 犯罪行為
+
+================================================================

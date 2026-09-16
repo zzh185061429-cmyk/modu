@@ -1,0 +1,15 @@
+{
+  "id": "c4a7d1b8-6e29-4f3c-8d5a-9b0e2f6c4a17",
+  "scriptName": "魔都-界面",
+  "findRegex": "/[\\s\\S]*/s",
+  "replaceString": "```\n<body>\n<script>\n$('body').load('https://cdn.jsdelivr.net/gh/zzh185061429-cmyk/yaoguai10@master/dist/魔都/index.html')\n</script>\n</body>\n```",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": true,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

@@ -1,0 +1,379 @@
+@import "tailwindcss" source(none);
+@import "./fonts.css";
+@source "../../魔都/src";
+@source "../index.html";
+@source "../index.tsx";
+@source not "../_probe";
+@source not "../.workbuddy-ai";
+@source not "../outputs";
+
+@theme {
+  --font-sans: 'Mato Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-serif: 'Mato Mincho', 'Songti SC', SimSun, serif;
+  --font-display: 'Mato Latin', Georgia, serif;
+  --font-mono: 'Mato Sans', 'Microsoft YaHei', sans-serif;
+  --color-ink-950: #f6f3ef;
+  --color-paper-100: #261e29;
+  --color-paper-200: #302730;
+  --color-paper-300: #51464d;
+  --color-paper-400: #67595e;
+  --color-rose-400: #ab2441;
+  --color-rose-500: #9d1831;
+  --color-orchid-200: #6e5369;
+  --color-orchid-400: #715666;
+}
+:root {
+  --mato-paper: #f6f3ef;
+  --mato-white: #fffdf9;
+  --mato-ink: #261e29;
+  --mato-red: #9d1831;
+  --mato-line: #d4c8c7;
+  --mato-muted: #796b70;
+  --mato-reading-size: 21px;
+}
+/* Scene 0 / sprites 10 / atmosphere 15 / dialogue 20 / choices 25 / HUD 30 / modal 40 / notices 60 / boot 100. */
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: var(--mato-paper); color: var(--mato-ink); }
+body { -webkit-font-smoothing: antialiased; font-family: var(--font-sans); }
+.mato-shell { color-scheme: light; color: var(--mato-ink); background: var(--mato-paper); height: 100dvh; isolation: isolate; }
+.mato-shell *, .mato-shell *::before, .mato-shell *::after { box-sizing: border-box; }
+.mato-shell button, .mato-shell input { font: inherit; }
+.mato-shell button { cursor: pointer; }
+.mato-shell button:disabled { cursor: not-allowed; opacity: .4; }
+.mato-shell :focus-visible { outline: 2px solid var(--mato-red); outline-offset: 4px; }
+.mato-shell input { user-select: text; }
+.mato-shell ::selection { background: #9d183125; }
+.mato-shell ::-webkit-scrollbar { width: 4px; height: 4px; }
+.mato-shell ::-webkit-scrollbar-thumb { background: #b39ba0; }
+.mato-shell * { scrollbar-width: thin; scrollbar-color: #b39ba0 transparent; }
+.mato-game { background: var(--mato-paper); --mato-gutter: clamp(22px, 4vw, 72px); }
+
+/* Still composition: manuscript ground, red inset, chain silhouette. */
+.mato-stage { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #f2eeeb; }
+.mato-stage__scene { width: 100%; height: 100%; object-fit: cover; }
+.mato-stage__wash { position: absolute; inset: 0; background: radial-gradient(ellipse at 62% 22%, #fffaf4 0, #f2eeeb 56%, #e4dad8 100%); }
+.mato-stage__circle { position: absolute; width: min(48vw, 690px); aspect-ratio: 1; top: 9%; left: 31%; border: 1px solid #a4304938; border-radius: 50%; box-shadow: 0 0 0 18px #9d183103, 0 0 0 19px #a4304914; }
+.mato-stage__word { position: absolute; left: 7%; top: 18%; font: 600 clamp(120px, 20vw, 320px)/1 var(--font-serif); letter-spacing: -.08em; color: #9d183109; writing-mode: vertical-rl; }
+.mato-stage__chain { position: absolute; right: 4%; top: -18%; height: 109%; width: auto; opacity: .22; transform: rotate(18deg); }
+.mato-stage__stripe { position: absolute; inset: 0 0 auto; height: 5px; background: var(--mato-red); }
+.mato-stage__location { position: absolute; right: 7%; top: 24%; writing-mode: vertical-rl; font: 600 19px/1.6 var(--font-serif); letter-spacing: .3em; color: #8a5962; border-left: 1px solid #ad92964a; padding-left: 16px; }
+.mato-sprites { position: absolute; z-index: 10; inset: 98px 17% 118px; display: flex; align-items: flex-start; justify-content: center; pointer-events: none; overflow: hidden; }
+.mato-sprites__actor { height: 117%; min-width: 0; flex: 0 1 42%; filter: saturate(.55); opacity: .67; transition: filter .2s, opacity .2s; }
+.mato-sprites__actor[data-active='true'] { filter: none; opacity: 1; }
+.mato-sprites[data-count='1'] .mato-sprites__actor { flex-basis: 70%; opacity: 1; filter: none; }
+.mato-sprites__actor img { height: 100%; width: 100%; object-fit: contain; object-position: center top; }
+.mato-atmosphere { position: absolute; inset: 0; z-index: 15; pointer-events: none; background: linear-gradient(0deg, #f6f3ef 3%, #f6f3ef00 40%); }
+.noise-overlay { display: none; }
+
+/* ── 文本框：上下分层（名牌骑压上缘 → 正文 → 控制条）── */
+.mato-dialogue { position: absolute; z-index: 20; left: max(var(--mato-gutter), calc((100% - 1040px) / 2)); right: max(var(--mato-gutter), calc((100% - 1040px) / 2)); bottom: calc(24px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; box-shadow: 0 10px 50px #60464a0d; }
+.mato-dialogue[data-collapsed='true'] { left: auto; right: max(18px, env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
+
+/* 名牌骑压正文上缘：一半在框外，一半在框内 */
+.mato-dialogue__plate { position: absolute; left: 26px; top: -18px; z-index: 3; display: flex; align-items: center; }
+.nameplate { position: relative; display: inline-flex; align-items: baseline; gap: 10px; padding: 7px 18px 7px 15px; background: var(--mato-ink); color: var(--mato-white); font: 600 17px/1.35 var(--font-serif); letter-spacing: .14em; white-space: nowrap; box-shadow: 0 5px 16px #261e2933; }
+.nameplate::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--plate-accent, var(--mato-red)); }
+.nameplate small { font: 400 10px/1 var(--font-sans); letter-spacing: .16em; color: #d8ccd0; }
+.mato-dialogue__seal { display: grid; place-items: center; width: 32px; height: 32px; background: var(--mato-red); color: var(--mato-white); font: 600 15px/1 var(--font-serif); box-shadow: 0 5px 16px #9d183133; }
+
+.surface-vn { position: relative; cursor: pointer; min-height: 118px; max-height: min(34dvh, 340px); overflow-y: auto; padding: 42px 44px 26px 30px; background: linear-gradient(to bottom, #fffdf900 0%, #fffdf9e8 15%, #fffdf9f7 46%, #fffdf9fa 100%); backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); }
+.surface-vn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, #9d183100, #9d183166 10%, #9d1831cc 50%, #9d183166 90%, #9d183100); }
+.mato-dialogue__text { font-family: var(--font-serif); font-size: var(--mato-reading-size); line-height: 1.95; letter-spacing: .035em; color: var(--mato-ink); margin: 0; overflow-wrap: anywhere; text-shadow: none; }
+.mato-dialogue__text[data-line-tone='narrator'] { color: #665760; }
+.mato-dialogue__text[data-line-tone='thought'] { color: #795267; font-style: normal; }
+.mato-dialogue__next { position: absolute; right: 18px; bottom: 12px; font-size: 9px; color: var(--mato-red); animation: mato-next-pulse 1.5s ease-in-out infinite; }
+@keyframes mato-next-pulse { 0%, 100% { opacity: .3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(3px); } }
+.mato-dialogue__draft { width: 100%; min-height: 92px; max-height: min(28dvh, 220px); padding: 12px 14px; border: 1px solid var(--mato-line); background: #fffdf9; color: var(--mato-ink); font: 400 var(--mato-reading-size)/1.85 var(--font-serif); resize: none; cursor: text; }
+.mato-dialogue__draft:focus-visible { border-color: var(--mato-red); outline: none; }
+.mato-dialogue__draft::placeholder { color: var(--mato-muted); font-size: 14px; }
+
+/* 控制条：左「怎么读」右「翻哪卷」 */
+.mato-dialogue__bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 3px 8px; background: #fffdf9f7; border-top: 1px solid var(--mato-line); }
+.mato-dialogue__controls { display: flex; align-items: center; gap: 1px; min-width: 0; flex-wrap: wrap; }
+.mato-dialogue__controls button { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 11px; border: 0; background: transparent; color: var(--mato-muted); font-size: 11.5px; letter-spacing: .06em; white-space: nowrap; }
+.mato-dialogue__controls button:hover:not(:disabled), .mato-dialogue__controls button[aria-pressed='true'] { color: var(--mato-red); }
+.mato-dialogue__controls button.is-primary { color: var(--mato-red); }
+.mato-dialogue__tools { display: flex; align-items: center; gap: 1px; flex-shrink: 0; }
+.mato-dialogue__tools button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 40px; min-width: 38px; padding: 0 8px; border: 0; background: transparent; color: var(--mato-muted); font-size: 11px; }
+.mato-dialogue__tools button:hover:not(:disabled) { color: var(--mato-red); }
+.mato-dialogue__tools button[aria-current='true'] { color: var(--mato-red); }
+.mato-dialogue__collapse { border-left: 1px solid var(--mato-line) !important; margin-left: 4px; }
+.mato-dialogue__expand { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 15px; border: 1px solid var(--mato-line); background: var(--mato-white); color: var(--mato-ink); font-size: 12px; letter-spacing: .14em; box-shadow: 0 6px 20px #261e2914; }
+.mato-dialogue__expand:hover { border-color: var(--mato-red); color: var(--mato-red); }
+
+/* ── 输入栏（两行草稿 + 清空 + 收起；收起后只剩一枚印章）── */
+.mato-composer { position: absolute; z-index: 22; display: flex; align-items: flex-end; gap: 10px; bottom: max(14px, env(safe-area-inset-bottom, 0px)); left: max(var(--mato-gutter), calc((100% - 1040px) / 2)); right: max(var(--mato-gutter), calc((100% - 1040px) / 2)); }
+.mato-composer[data-open='false'] { left: auto; right: max(18px, env(safe-area-inset-right, 0px)); }
+.mato-composer__field { position: relative; flex: 1; min-width: 0; display: flex; }
+.mato-composer textarea { flex: 1; min-width: 0; min-height: 57px; max-height: 132px; padding: 8px 32px 8px 11px; border: 1px solid var(--mato-line); background: var(--mato-white); color: var(--mato-ink); font: 400 14px/1.45 var(--font-sans); resize: none; }
+.mato-composer textarea:focus-visible { border-color: var(--mato-red); outline: none; }
+.mato-composer textarea::placeholder { color: var(--mato-muted); }
+.mato-composer__clear { position: absolute; top: 5px; right: 5px; display: grid; place-items: center; width: 26px; height: 26px; border: 0; background: transparent; color: var(--mato-muted); }
+.mato-composer__clear:hover { color: var(--mato-red); }
+.mato-composer__send { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 20px; border: 1px solid var(--mato-red); background: var(--mato-red); color: #fffaf6; font-size: 12px; letter-spacing: .15em; }
+.mato-composer__send:hover:not(:disabled) { background: var(--mato-ink); border-color: var(--mato-ink); }
+.mato-composer__collapse { display: grid; place-items: center; width: 40px; min-height: 44px; border: 1px solid var(--mato-line); background: transparent; color: var(--mato-muted); }
+.mato-composer__collapse:hover { border-color: var(--mato-red); color: var(--mato-red); }
+.mato-composer__spin { animation: mato-spin 1s linear infinite; }
+@keyframes mato-spin { to { transform: rotate(360deg); } }
+.mato-composer__draft { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; padding: 0 17px; border: 1px solid var(--mato-red); background: var(--mato-white); color: var(--mato-red); font-size: 12px; letter-spacing: .16em; box-shadow: 0 6px 20px #9d18311a; }
+
+/* HUD: fixed-size controls never push adjacent controls on hover. */
+/* ── 常驻顶栏：只回答「我是谁 / 我在哪 / 读到第几层」── */
+.mato-hud { position: absolute; top: 0; left: 0; right: 0; z-index: 30; display: flex; align-items: center; gap: 18px; padding: 13px var(--mato-gutter) 11px; border-bottom: 1px solid #bca6aa3d; background: linear-gradient(#f6f3eff5, #f6f3efda); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.mato-hud__brand { display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
+.mato-hud__brand > b { display: grid; place-items: center; width: 36px; height: 40px; background: var(--mato-red); color: #fffdf9; font: 600 25px/1 var(--font-serif); }
+.mato-hud__brand div { display: flex; flex-direction: column; gap: 5px; }
+.mato-hud__brand span { font-size: 9px; letter-spacing: .28em; color: var(--mato-muted); }
+.mato-hud__brand strong { font: 600 13px/1 var(--font-serif); letter-spacing: .16em; }
+.mato-hud__meta { display: flex; align-items: center; gap: 13px; min-width: 0; margin-right: auto; }
+.mato-hud__meta i { width: 1px; height: 15px; background: var(--mato-line); flex-shrink: 0; }
+.mato-hud__place { font: 600 14px/1.3 var(--font-serif); letter-spacing: .06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mato-hud__player { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--mato-muted); white-space: nowrap; }
+.mato-hud__player em { font-size: 9px; font-style: normal; color: #8a674d; }
+.mato-hud__floor { font-size: 12px; color: var(--mato-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mato-hud__floor small { font-size: 10px; }
+.mato-hud__menu { display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0; min-height: 44px; padding: 0 16px; border: 1px solid var(--mato-line); background: transparent; color: var(--mato-ink); font-size: 12px; letter-spacing: .16em; }
+.mato-hud__menu:hover { border-color: var(--mato-red); color: var(--mato-red); }
+.mato-hud__generating { position: absolute; right: var(--mato-gutter); top: 100%; padding: 9px 16px; background: var(--mato-red); color: #fff; font-size: 11px; }
+
+/* ── 指挥终端：右侧滑出边栏（不是下拉浮层）── */
+.mato-sidebar { position: absolute; inset: 0; z-index: 40; }
+.mato-sidebar__scrim { position: absolute; inset: 0; background: #261e2938; }
+.mato-sidebar__panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(370px, 88vw); display: flex; flex-direction: column; background: var(--mato-paper); border-left: 1px solid var(--mato-line); box-shadow: -20px 0 55px #261e2929; animation: mato-sidebar-in .2s ease-out; }
+@keyframes mato-sidebar-in { from { transform: translateX(101%); } to { transform: none; } }
+.mato-sidebar__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 18px 16px; border-bottom: 1px solid var(--mato-line); }
+.mato-sidebar__head strong { font: 600 17px/1 var(--font-serif); letter-spacing: .22em; }
+.mato-sidebar__head small { display: block; margin-top: 8px; font-size: 10px; letter-spacing: .12em; color: var(--mato-muted); }
+.mato-sidebar__body { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 14px 20px; }
+.mato-sidebar__group { margin-bottom: 20px; }
+.mato-sidebar__group h3 { margin: 0 0 9px 5px; font: 400 10px/1 var(--font-sans); letter-spacing: .3em; color: var(--mato-muted); display: flex; justify-content: space-between; }
+.mato-sidebar__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.mato-sidebar__grid button { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; min-height: 68px; padding: 12px 13px; border: 1px solid var(--mato-line); background: var(--mato-white); color: var(--mato-ink); text-align: left; }
+.mato-sidebar__grid button:hover:not(:disabled) { border-color: var(--mato-red); color: var(--mato-red); }
+.mato-sidebar__grid button svg { color: var(--mato-red); }
+.mato-sidebar__grid button strong { font: 600 14px/1.3 var(--font-serif); letter-spacing: .06em; }
+.mato-sidebar__grid button small { font-size: 9px; letter-spacing: .18em; color: var(--mato-muted); }
+.mato-sidebar__grid button[data-danger='true'] { border-color: #9d183159; }
+.mato-sidebar__grid button[data-danger='true'] svg, .mato-sidebar__grid button[data-danger='true'] strong { color: var(--mato-red); }
+.mato-sidebar__list { display: flex; flex-direction: column; gap: 1px; max-height: 32dvh; overflow-y: auto; }
+.mato-sidebar__list button { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; padding: 8px 13px; border: 0; background: transparent; color: var(--mato-ink); font-size: 13px; font-variant-numeric: tabular-nums; }
+.mato-sidebar__list button:hover, .mato-sidebar__list button[aria-current='true'] { background: #9d18310c; color: var(--mato-red); }
+.mato-sidebar__list small { font-size: 10px; color: var(--mato-muted); }
+.mato-sidebar__empty { margin: 0; padding: 10px 5px; font-size: 12px; color: var(--mato-muted); }
+.mato-sidebar__follow { width: 100%; min-height: 44px; margin-top: 6px; border: 1px solid var(--mato-line); background: transparent; color: var(--mato-red); font-size: 12px; letter-spacing: .12em; }
+.mato-sidebar__foot { padding: 12px 14px max(14px, env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--mato-line); }
+.mato-sidebar__exit { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; padding: 0 14px; border: 1px solid var(--mato-line); background: transparent; color: var(--mato-ink); font-size: 13px; letter-spacing: .14em; }
+.mato-sidebar__exit span { flex: 1; text-align: left; }
+.mato-sidebar__exit small { font-size: 9px; letter-spacing: .18em; color: var(--mato-muted); }
+.mato-sidebar__exit:hover { border-color: var(--mato-red); color: var(--mato-red); }
+.mato-sidebar__rows { display: flex; flex-direction: column; gap: 4px; }
+.mato-sidebar__rows button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 0 14px; border: 1px solid var(--mato-line); background: var(--mato-white); color: var(--mato-ink); text-align: left; }
+.mato-sidebar__rows button:hover { border-color: var(--mato-red); color: var(--mato-red); }
+.mato-sidebar__rows button svg { flex-shrink: 0; color: var(--mato-red); }
+.mato-sidebar__rows button strong { font: 600 14px/1.3 var(--font-serif); letter-spacing: .06em; }
+.mato-sidebar__rows button small { margin-left: auto; font-size: 10px; color: var(--mato-muted); }
+
+/* ── 推演记录（思维链查看器）── */
+.mato-thinking { display: flex; flex-direction: column; gap: 14px; }
+.mato-thinking__head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--mato-line); background: var(--mato-white); }
+.mato-thinking__head svg { flex-shrink: 0; color: var(--mato-red); }
+.mato-thinking__head strong { display: block; font: 600 15px/1.3 var(--font-serif); letter-spacing: .1em; }
+.mato-thinking__head small { display: block; margin-top: 5px; font-size: 10px; color: var(--mato-muted); }
+.mato-thinking__count { margin-left: auto; font-size: 11px; color: var(--mato-muted); }
+.mato-thinking__empty { margin: 0; padding: 26px 16px; text-align: center; font-size: 13px; color: var(--mato-muted); border: 1px solid var(--mato-line); }
+.mato-thinking__list { display: flex; flex-direction: column; gap: 6px; max-height: 52dvh; overflow-y: auto; }
+.mato-thinking__item { border: 1px solid var(--mato-line); background: var(--mato-white); }
+.mato-thinking__item > button { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 42px; padding: 8px 13px; border: 0; background: transparent; color: var(--mato-ink); text-align: left; font-size: 13px; }
+.mato-thinking__item > button:hover { color: var(--mato-red); }
+.mato-thinking__item > button small { margin-left: auto; font-size: 10px; color: var(--mato-muted); }
+.mato-thinking__item pre { margin: 0; padding: 12px 14px; border-top: 1px solid var(--mato-line); background: #faf7f3; color: #4b4048; font: 400 12.5px/1.75 var(--font-mono); white-space: pre-wrap; word-break: break-word; max-height: 34dvh; overflow-y: auto; }
+
+/* ── 操作手册 ── */
+.mato-manual { display: flex; flex-direction: column; gap: 18px; max-height: 62dvh; overflow-y: auto; padding-right: 4px; }
+.mato-manual__section h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font: 600 15px/1.3 var(--font-serif); letter-spacing: .12em; }
+.mato-manual__section h3 span { font: 400 11px/1 var(--font-display); color: var(--mato-red); letter-spacing: .1em; }
+.mato-manual__section ul { display: flex; flex-direction: column; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.mato-manual__section li { position: relative; padding-left: 16px; font-size: 13px; line-height: 1.75; color: #4b4048; }
+.mato-manual__section li::before { content: ''; position: absolute; left: 0; top: .68em; width: 6px; height: 1px; background: var(--mato-line); }
+
+/* ── 删除楼层（范围）── */
+.mato-purge { display: flex; flex-direction: column; gap: 16px; }
+.mato-purge__warning { display: flex; gap: 12px; padding: 16px; border: 1px solid #9d18314d; border-left: 3px solid var(--mato-red); background: #9d18310a; }
+.mato-purge__warning svg { flex-shrink: 0; color: var(--mato-red); }
+.mato-purge__warning strong { display: block; font: 600 14px/1.4 var(--font-serif); }
+.mato-purge__warning p { margin: 6px 0 0; font-size: 12px; line-height: 1.7; color: var(--mato-muted); }
+.mato-purge__fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mato-purge__fields label { display: flex; flex-direction: column; gap: 7px; }
+.mato-purge__fields span { font-size: 11px; letter-spacing: .16em; color: var(--mato-muted); }
+.mato-purge__fields input { min-height: 44px; padding: 8px 12px; border: 1px solid var(--mato-line); background: var(--mato-white); color: var(--mato-ink); font-size: 14px; }
+.mato-purge__fields input:focus-visible { border-color: var(--mato-red); outline: none; }
+.mato-purge__hint { margin: 0; font-size: 11px; color: var(--mato-muted); }
+.mato-purge__submit { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; border: 1px solid var(--mato-red); background: var(--mato-red); color: #fffaf6; font-size: 13px; letter-spacing: .16em; }
+.mato-purge__submit:hover:not(:disabled) { background: var(--mato-ink); border-color: var(--mato-ink); }
+
+/* Choice slips and shared paper dialogs. */
+.mato-choices { position: absolute; inset: 0; z-index: 25; display: flex; align-items: center; justify-content: center; background: #f6f3efe8; padding: 112px 24px 85px; }
+.mato-choices__list { width: min(620px, 100%); max-height: 100%; overflow-y: auto; }
+.mato-choices__list header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--mato-line); margin-bottom: 20px; padding-bottom: 14px; }
+.mato-choices__list h2 { font: 600 28px var(--font-serif); margin: 0; letter-spacing: .3em; }
+.surface-slip { display: flex; width: 100%; align-items: center; gap: 20px; padding: 22px 20px; margin-top: 12px; border: 1px solid var(--mato-line); background: var(--mato-white); color: var(--mato-ink); text-align: left; }
+.surface-slip > span { font: 26px var(--font-display); color: #b19a9f; }
+.surface-slip strong { flex: 1; font: 600 17px/1.7 var(--font-serif); overflow-wrap: anywhere; }
+.surface-slip svg { flex-shrink: 0; color: var(--mato-red); }
+.surface-slip:hover, .surface-slip:focus-visible { border-color: var(--mato-red); box-shadow: inset 3px 0 var(--mato-red); }
+.mato-icon-button { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; border: 1px solid var(--mato-line); background: transparent; color: var(--mato-ink); }
+.mato-icon-button:hover { border-color: var(--mato-red); color: var(--mato-red); }
+.mato-button { min-height: 44px; padding: 10px 24px; display: inline-flex; justify-content: center; align-items: center; gap: 8px; border: 1px solid var(--mato-red); background: var(--mato-red); color: #fffdf9; }
+.mato-button--ghost, .mato-button--secondary { background: transparent; color: var(--mato-red); }
+.mato-modal { position: absolute; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: max(22px, env(safe-area-inset-top)) max(22px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(22px, env(safe-area-inset-left)); }
+.mato-modal__backdrop { position: absolute; inset: 0; background: #f0e9e6ea; }
+.mato-modal__panel { position: relative; display: flex; flex-direction: column; width: min(1060px, 100%); max-height: 100%; background: var(--mato-white); border: 1px solid #c5b5b7; box-shadow: 0 22px 80px #56333e14; overflow: hidden; }
+.mato-modal__header { flex-shrink: 0; position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 23px 32px; border-bottom: 1px solid var(--mato-line); }
+.mato-modal__header > div { display: flex; gap: 20px; align-items: center; }
+.mato-modal__index { color: var(--mato-red); font: 32px/1 var(--font-display); }
+.mato-modal__header h2 { font: 600 25px var(--font-serif); letter-spacing: .2em; margin: 0; }
+.mato-modal__chain { position: absolute; right: 0; top: 70px; height: 100%; opacity: .035; pointer-events: none; }
+.mato-modal__content { position: relative; overflow-y: auto; min-height: 0; padding: 32px; }
+.mato-archive { display: grid; grid-template-columns: 180px minmax(160px, 1.1fr) minmax(180px, .85fr); min-height: 390px; gap: 24px; }
+.mato-archive > nav { display: flex; flex-direction: column; gap: 7px; padding-top: 8px; }
+.mato-archive > nav button { min-height: 60px; padding: 12px 10px; display: grid; grid-template-columns: 23px 1fr; gap: 5px 7px; text-align: left; background: transparent; border: 0; border-left: 2px solid transparent; color: var(--mato-ink); }
+.mato-archive > nav button[aria-pressed='true'] { border-left-color: var(--mato-red); background: #9d183108; color: var(--mato-red); }
+.mato-archive > nav button small { grid-row: span 2; font: 16px var(--font-display); color: #ad969c; }
+.mato-archive > nav button span { font: 600 15px var(--font-serif); letter-spacing: .08em; }
+.mato-archive > nav button em { grid-column: 2; font-size: 9px; font-style: normal; color: var(--mato-muted); }
+.mato-archive__portrait { position: relative; display: flex; align-items: flex-start; justify-content: center; height: 440px; overflow: hidden; background: linear-gradient(160deg,#f3eeeb,#fffdf9); }
+.mato-archive__portrait > span { position: absolute; top: 12%; font: 600 230px var(--font-serif); color: #9d18310b; }
+.mato-archive__portrait img { position: relative; height: 115%; width: 100%; object-fit: contain; object-position: center top; padding-top: 14px; }
+.mato-archive__identity { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-bottom: 30px; }
+.mato-archive__identity > span { border: 1px solid var(--mato-line); padding: 6px 10px; font-size: 10px; color: var(--mato-red); letter-spacing: .1em; }
+.mato-archive__identity h3 { font: 600 clamp(26px, 3.2vw, 42px)/1.6 var(--font-serif); letter-spacing: .08em; margin: 14px 0 5px; }
+.mato-archive__identity > small { font: 10px var(--font-display); color: #977b84; letter-spacing: .13em; }
+.mato-archive__ability { margin-top: 40px; padding-top: 18px; width: 100%; border-top: 1px solid var(--mato-line); display: flex; flex-direction: column; gap: 12px; }
+.mato-archive__ability > span { font-size: 10px; color: var(--mato-muted); letter-spacing: .25em; }
+.mato-archive__ability strong { font: 600 23px var(--font-serif); color: var(--mato-red); }
+.mato-archive__ability small { font-size: 10px; color: var(--mato-muted); }
+.mato-settings { max-width: 760px; margin: auto; padding: 12px 0 24px; }
+.mato-settings__row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 0; border-bottom: 1px solid var(--mato-line); }
+.mato-settings__row > div:first-child { display: flex; align-items: center; gap: 20px; }
+.mato-settings__row small { color: var(--mato-red); font: 20px var(--font-display); }
+.mato-settings h3 { margin: 0; font: 600 19px var(--font-serif); letter-spacing: .1em; }
+.mato-segment { display: flex; border: 1px solid var(--mato-line); }
+.mato-segment button { padding: 11px 18px; min-height: 44px; border: 0; background: transparent; color: var(--mato-muted); font-size: 12px; }
+.mato-segment button[aria-pressed='true'] { background: var(--mato-red); color: #fffdf9; }
+.mato-settings__sample { margin-top: 32px; padding: 28px; border-left: 2px solid var(--mato-red); background: #f7f2ef; }
+.mato-settings__sample > span { color: var(--mato-red); font: 600 16px var(--font-serif); }
+.mato-settings__sample p { font-family: var(--font-serif); margin: 20px 0 0; }
+.mato-territories { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+.mato-territories article { position: relative; overflow: hidden; padding: 26px; border: 1px solid var(--mato-line); min-height: 190px; background: linear-gradient(120deg,#fffdf9,#f2eae7); }
+.mato-territories__number { position: absolute; bottom: -25px; right: 12px; font: 140px var(--font-display); color: #9d183107; }
+.mato-territories header { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.mato-territories header small { color: var(--mato-muted); font-size: 10px; letter-spacing: .14em; }
+.mato-territories header > span { font-size: 10px; color: var(--mato-red); border: 1px solid #9d183130; padding: 4px 8px; }
+.mato-territories h3 { position: relative; font: 600 26px var(--font-serif); margin: 22px 0 28px; }
+.mato-territories footer { position: relative; display: flex; align-items: center; gap: 16px; font-size: 11px; }
+.mato-territories footer > span { color: var(--mato-muted); }
+.mato-territories footer strong { font-weight: 400; }
+.mato-history { min-height: 300px; }
+.mato-history article { display: grid; grid-template-columns: 35px 120px minmax(0,1fr); gap: 20px; padding: 22px 0; border-bottom: 1px solid #d4c8c780; }
+.mato-history__index { color: #b497a0; font: 18px var(--font-display); }
+.mato-history h3 { margin: 0; color: var(--mato-red); font: 600 15px/1.9 var(--font-serif); }
+.mato-history p { margin: 0; font: 400 16px/1.9 var(--font-serif); user-select: text; overflow-wrap: anywhere; }
+.mato-history article[data-type='narrator'] p { color: var(--mato-muted); }
+.mato-notices { position: absolute; top: 106px; right: 24px; z-index: 60; display: flex; flex-direction: column; gap: 10px; width: min(340px,calc(100% - 32px)); pointer-events: none; }
+.mato-notice { pointer-events: auto; display: flex; gap: 12px; align-items: flex-start; padding: 18px; background: var(--mato-white); border: 1px solid var(--mato-line); border-left: 3px solid var(--mato-red); box-shadow: 0 10px 30px #55313b12; }
+.mato-notice > svg { flex-shrink: 0; color: var(--mato-red); }
+.mato-notice > div { flex: 1; min-width: 0; }
+.mato-notice h4 { font: 600 15px var(--font-serif); margin: 0; }
+.mato-notice p { font-size: 12px; line-height: 1.7; color: var(--mato-muted); margin: 6px 0 0; overflow-wrap: anywhere; }
+.mato-notice button { background: transparent; color: var(--mato-muted); border: 0; padding: 4px; }
+
+@media (max-width: 1100px) {
+  .mato-hud { gap: 14px; }
+  .mato-hud__player { display: none; }
+  .nameplate small { display: none; }
+  .mato-archive { grid-template-columns: 150px minmax(130px,1fr) minmax(155px,.8fr); gap: 16px; }
+}
+@media (max-width: 700px) {
+  .mato-game { --mato-gutter: 20px; }
+  .mato-hud { padding: 10px 20px; gap: 10px; }
+  .mato-hud__brand > b { width: 32px; height: 36px; font-size: 22px; }
+  .mato-hud__brand span { letter-spacing: .2em; }
+  .mato-hud__brand strong { font-size: 12px; }
+  .mato-hud__meta { gap: 9px; }
+  .mato-hud__place { font-size: 13px; }
+  .mato-hud__menu { padding: 0 13px; gap: 7px; }
+  .mato-sidebar__panel { width: min(340px, 92vw); }
+  .mato-sidebar__rows button small { display: none; }
+  .mato-purge__fields { grid-template-columns: 1fr; }
+  .mato-manual { max-height: 58dvh; }
+  .mato-thinking__list { max-height: 46dvh; }
+  .mato-sprites { inset: 84px 8% 176px; }
+  .mato-sprites__actor { height: 116%; flex-basis: 53%; margin-inline: -5%; }
+  .mato-sprites[data-count='1'] .mato-sprites__actor { flex-basis: 100%; }
+  .mato-stage__word { font-size: 180px; top: 20%; left: 1%; }
+  .mato-stage__circle { top: 20%; left: 4%; width: 90vw; }
+  .mato-stage__location { right: 6%; top: 18%; font-size: 12px; padding-left: 10px; }
+  .mato-stage__chain { right: 1%; opacity: .15; }
+  .mato-dialogue { bottom: calc(92px + env(safe-area-inset-bottom,0px)); }
+  .mato-dialogue[data-collapsed='true'] { bottom: calc(66px + env(safe-area-inset-bottom,0px)); }
+  .mato-dialogue__plate { left: 16px; top: -16px; }
+  .nameplate { font-size: 15px; padding: 6px 14px 6px 12px; letter-spacing: .1em; }
+  .mato-dialogue__seal { width: 28px; height: 28px; font-size: 13px; }
+  .mato-dialogue__controls { gap: 0; }
+  .mato-dialogue__controls button { padding: 0 8px; min-height: 40px; }
+  .mato-dialogue__controls button span { display: none; }
+  .mato-dialogue__tools button { min-width: 36px; }
+  .surface-vn { padding: 36px 26px 22px 18px; min-height: 122px; max-height: 32dvh; }
+  .mato-dialogue__text { font-size: calc(var(--mato-reading-size) - 3px); line-height: 1.9; }
+  .mato-dialogue__draft { font-size: 16px; }
+  .mato-composer { gap: 8px; bottom: max(12px,env(safe-area-inset-bottom,0px)); }
+  .mato-composer textarea { font-size: 16px; min-height: 64px; }
+  .mato-composer__send { padding-inline: 15px; gap: 7px; }
+  .mato-composer__collapse { width: 38px; }
+  .mato-modal { padding: 12px; }
+  .mato-modal__header { padding: 16px 20px; }
+  .mato-modal__header h2 { font-size: 22px; }
+  .mato-modal__index { font-size: 28px; }
+  .mato-modal__content { padding: 20px; }
+  .mato-archive { grid-template-columns: 1fr 1fr; gap: 12px; min-height: 0; }
+  .mato-archive > nav { grid-column: 1 / -1; display: flex; flex-direction: row; overflow-x: auto; padding: 0 0 12px; gap: 2px; }
+  .mato-archive > nav button { flex: 0 0 110px; min-height: 56px; padding: 8px; gap: 4px; }
+  .mato-archive > nav button span { font-size: 13px; }
+  .mato-archive > nav button small { font-size: 13px; }
+  .mato-archive__portrait { height: 340px; }
+  .mato-archive__portrait img { height: 100%; width: auto; max-width: none; }
+  .mato-archive__identity h3 { font-size: 24px; letter-spacing: 0; }
+  .mato-archive__identity > small { font-size: 8px; letter-spacing: 0; }
+  .mato-archive__identity > span { font-size: 9px; padding: 5px 7px; }
+  .mato-archive__ability { margin-top: 30px; }
+  .mato-archive__ability strong { font-size: 20px; }
+  .mato-settings__row { align-items: flex-start; flex-direction: column; gap: 22px; padding-block: 22px; }
+  .mato-segment { width: 100%; }
+  .mato-segment button { flex: 1; padding-inline: 10px; }
+  .mato-settings__sample { padding: 20px; }
+  .mato-territories { grid-template-columns: 1fr; gap: 12px; }
+  .mato-territories article { padding: 20px; min-height: 160px; }
+  .mato-territories h3 { font-size: 24px; margin-block: 18px; }
+  .mato-history article { grid-template-columns: 24px 1fr; gap: 8px 12px; }
+  .mato-history p { grid-column: 2; font-size: 15px; }
+  .mato-notices { right: 16px; top: 86px; }
+  .surface-slip { gap: 14px; padding: 16px 14px; }
+  .surface-slip strong { font-size: 15px; }
+  .mato-choices { padding-top: 90px; }
+}
+@media (max-height: 500px) and (min-width: 701px) {
+  .mato-hud { padding-block: 6px; }
+  .mato-hud__brand > b { height: 34px; width: 32px; font-size: 22px; }
+  .mato-sprites { top: 60px; bottom: 70px; }
+  .mato-dialogue { bottom: 16px; }
+  .mato-dialogue__plate { top: -15px; }
+  .surface-vn { min-height: 78px; max-height: 26dvh; padding: 34px 34px 16px 24px; }
+  .mato-dialogue__text { font-size: calc(var(--mato-reading-size) - 3px); }
+  .mato-modal { padding: 12px; }
+  .mato-modal__header { padding: 10px 24px; }
+  .mato-choices { padding-top: 75px; padding-bottom: 20px; }
+}
+[data-mato-staged='true'] *, [data-mato-staged='true'] *::before, [data-mato-staged='true'] *::after { animation-play-state: paused !important; backdrop-filter: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .mato-shell *, .mato-shell *::before, .mato-shell *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

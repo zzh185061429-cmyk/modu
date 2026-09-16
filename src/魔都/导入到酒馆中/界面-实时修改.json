@@ -1,0 +1,15 @@
+{
+  "id": "b7f3e9a2-4c81-4d6e-9f0a-2e5b8c1d7a34",
+  "scriptName": "魔都-实时修改",
+  "findRegex": "/[\\s\\S]*/s",
+  "replaceString": "```\n<body>\n<script>\n$('body').load('http://localhost:5500/dist/魔都/index.html')\n</script>\n</body>\n```",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": true,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

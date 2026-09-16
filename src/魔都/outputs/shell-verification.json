@@ -1,0 +1,595 @@
+{
+  "url": "file:///D:/BaiduNetdiskDownload/tavern_helper_template-main/dist/%E9%AD%94%E9%83%BD/index.html",
+  "results": [
+    {
+      "name": "desktop 顶栏常驻",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 菜单按钮可达",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 常驻区不再堆功能按钮",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 文本框存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 名牌骑压上缘",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 旁白/对话标识存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 控制条在框内底部",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 控制条含记录/上句/自动/语速",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 楼层翻卷在框内",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 上句可回退",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 语速可就地切换",
+      "passed": true,
+      "detail": "适中 → 迅疾"
+    },
+    {
+      "name": "desktop 桌面不渲染底部输入栏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 桌面控制条有发送入口",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 文本框原地变输入框",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 输入时正文让位",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop Esc 收合输入模式",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 文本框可折叠",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 文本框可展开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 菜单拉出侧边栏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 侧边栏自右侧滑出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 侧边栏宽度按设计展开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 侧边栏入口齐全（系统 4 + 辅助 3 + 本楼 2 + 返回）",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 侧边栏四宫格两列都在框内",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 手册弹窗可开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop Esc 只关弹窗不退出游戏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 记录弹窗可开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 推演弹窗可开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 删除楼层弹窗可开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 删除按范围而不是一键删本楼",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop Esc 收合侧边栏且不退出游戏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 顶栏常驻",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 菜单按钮可达",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 常驻区不再堆功能按钮",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 文本框存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 名牌骑压上缘",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 旁白/对话标识存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 控制条在框内底部",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 控制条含记录/上句/自动/语速",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 楼层翻卷在框内",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 上句可回退",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 语速可就地切换",
+      "passed": true,
+      "detail": "适中 → 迅疾"
+    },
+    {
+      "name": "mobile 窄屏用底部输入栏",
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "name": "mobile 窄屏控制条不重复发送入口",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 文本框不压输入栏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 有字才出现清空键",
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "name": "mobile 输入栏可收起",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 草稿未被收起清掉",
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "name": "mobile 文本框可折叠",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 文本框可展开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 菜单拉出侧边栏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 侧边栏自右侧滑出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 侧边栏宽度按设计展开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 侧边栏入口齐全（系统 4 + 辅助 3 + 本楼 2 + 返回）",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 侧边栏四宫格两列都在框内",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 手册弹窗可开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile Esc 只关弹窗不退出游戏",
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "name": "mobile Esc 收合侧边栏且不退出游戏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 顶栏常驻",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 菜单按钮可达",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 常驻区不再堆功能按钮",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 文本框存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 名牌骑压上缘",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 旁白/对话标识存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 控制条在框内底部",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 控制条含记录/上句/自动/语速",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 楼层翻卷在框内",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 上句可回退",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 语速可就地切换",
+      "passed": true,
+      "detail": "适中 → 迅疾"
+    },
+    {
+      "name": "landscape 桌面不渲染底部输入栏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 桌面控制条有发送入口",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 文本框原地变输入框",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 输入时正文让位",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape Esc 收合输入模式",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 文本框可折叠",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 文本框可展开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 菜单拉出侧边栏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 侧边栏自右侧滑出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 侧边栏宽度按设计展开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 侧边栏入口齐全（系统 4 + 辅助 3 + 本楼 2 + 返回）",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 侧边栏四宫格两列都在框内",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 手册弹窗可开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape Esc 只关弹窗不退出游戏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 记录弹窗可开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 推演弹窗可开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 删除楼层弹窗可开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 删除按范围而不是一键删本楼",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape Esc 收合侧边栏且不退出游戏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 顶栏常驻",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 菜单按钮可达",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 常驻区不再堆功能按钮",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 文本框存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 名牌骑压上缘",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 旁白/对话标识存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 控制条在框内底部",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 控制条含记录/上句/自动/语速",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 楼层翻卷在框内",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 上句可回退",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 语速可就地切换",
+      "passed": true,
+      "detail": "适中 → 迅疾"
+    },
+    {
+      "name": "narrow 窄屏用底部输入栏",
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "name": "narrow 窄屏控制条不重复发送入口",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 文本框不压输入栏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 有字才出现清空键",
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "name": "narrow 输入栏可收起",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 草稿未被收起清掉",
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "name": "narrow 文本框可折叠",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 文本框可展开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 菜单拉出侧边栏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 侧边栏自右侧滑出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 侧边栏宽度按设计展开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 侧边栏入口齐全（系统 4 + 辅助 3 + 本楼 2 + 返回）",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 侧边栏四宫格两列都在框内",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 手册弹窗可开",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow Esc 只关弹窗不退出游戏",
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "name": "narrow Esc 收合侧边栏且不退出游戏",
+      "passed": true,
+      "detail": ""
+    }
+  ]
+}

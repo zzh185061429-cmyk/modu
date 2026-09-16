@@ -1,0 +1,347 @@
+{
+  "results": [
+    {
+      "name": "desktop 入口无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 开始按钮可到达",
+      "passed": true,
+      "detail": "{\"reachable\":true,\"scroll\":900,\"client\":900}"
+    },
+    {
+      "name": "desktop HUD / 对话 / 输入均在视口",
+      "passed": true,
+      "detail": "[{\"selector\":\".mato-hud\",\"rect\":{\"x\":0,\"y\":0,\"w\":1440,\"h\":69,\"right\":1440,\"bottom\":69}},{\"selector\":\".mato-dialogue\",\"rect\":{\"x\":200,\"y\":711,\"w\":1040,\"h\":165,\"right\":1240,\"bottom\":876}},{\"selector\":\"#vn-textbox\",\"rect\":{\"x\":200,\"y\":711,\"w\":1040,\"h\":118,\"right\":1240,\"bottom\":829}}]"
+    },
+    {
+      "name": "desktop 对话框不遮输入",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop archive 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 人物档案可切换",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop territory 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop settings 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 文字速度可调整",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 战斗界面无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "演习连点只结算一次",
+      "passed": true,
+      "detail": "15000 -> 14985"
+    },
+    {
+      "name": "演习可切换天花",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop Escape退出演习保留游戏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "选项可见",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "选择仅起草",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "desktop 无解释性占位文案",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "中西文字体实际加载",
+      "passed": true,
+      "detail": "{\"serif\":true,\"sans\":true,\"latin\":true}"
+    },
+    {
+      "name": "角色原图成功加载",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 入口无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 开始按钮可到达",
+      "passed": true,
+      "detail": "{\"reachable\":true,\"scroll\":914,\"client\":844}"
+    },
+    {
+      "name": "mobile HUD / 对话 / 输入均在视口",
+      "passed": true,
+      "detail": "[{\"selector\":\".mato-hud\",\"rect\":{\"x\":0,\"y\":0,\"w\":390,\"h\":65,\"right\":390,\"bottom\":65}},{\"selector\":\".mato-dialogue\",\"rect\":{\"x\":20,\"y\":583,\"w\":350,\"h\":169,\"right\":370,\"bottom\":752}},{\"selector\":\"#mato-input\",\"rect\":{\"x\":20,\"y\":767.625,\"w\":204.1875,\"h\":64.375,\"right\":224.1875,\"bottom\":832}},{\"selector\":\"#mato-send\",\"rect\":{\"x\":232.1875,\"y\":788,\"w\":91.8125,\"h\":44,\"right\":324,\"bottom\":832}}]"
+    },
+    {
+      "name": "mobile 对话框不遮输入",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile archive 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 人物档案可切换",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile territory 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile settings 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 文字速度可调整",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 战斗界面无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile Escape退出演习保留游戏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 无解释性占位文案",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 入口无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 开始按钮可到达",
+      "passed": true,
+      "detail": "{\"reachable\":true,\"scroll\":445,\"client\":390}"
+    },
+    {
+      "name": "landscape HUD / 对话 / 输入均在视口",
+      "passed": true,
+      "detail": "[{\"selector\":\".mato-hud\",\"rect\":{\"x\":0,\"y\":0,\"w\":844,\"h\":57,\"right\":844,\"bottom\":57}},{\"selector\":\".mato-dialogue\",\"rect\":{\"x\":33.75,\"y\":241.90625,\"w\":776.5,\"h\":132.09375,\"right\":810.25,\"bottom\":374}},{\"selector\":\"#vn-textbox\",\"rect\":{\"x\":33.75,\"y\":241.90625,\"w\":776.5,\"h\":85.09375,\"right\":810.25,\"bottom\":327}}]"
+    },
+    {
+      "name": "landscape 对话框不遮输入",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape archive 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 人物档案可切换",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape territory 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape settings 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 文字速度可调整",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 战斗界面无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape Escape退出演习保留游戏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "landscape 无解释性占位文案",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 入口无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 开始按钮可到达",
+      "passed": true,
+      "detail": "{\"reachable\":true,\"scroll\":790,\"client\":640}"
+    },
+    {
+      "name": "narrow HUD / 对话 / 输入均在视口",
+      "passed": true,
+      "detail": "[{\"selector\":\".mato-hud\",\"rect\":{\"x\":0,\"y\":0,\"w\":320,\"h\":65,\"right\":320,\"bottom\":65}},{\"selector\":\".mato-dialogue\",\"rect\":{\"x\":20,\"y\":379,\"w\":280,\"h\":169,\"right\":300,\"bottom\":548}},{\"selector\":\"#mato-input\",\"rect\":{\"x\":20,\"y\":563.625,\"w\":134.1875,\"h\":64.375,\"right\":154.1875,\"bottom\":628}},{\"selector\":\"#mato-send\",\"rect\":{\"x\":162.1875,\"y\":584,\"w\":91.8125,\"h\":44,\"right\":254,\"bottom\":628}}]"
+    },
+    {
+      "name": "narrow 对话框不遮输入",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow archive 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 人物档案可切换",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow territory 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow settings 布局无溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 文字速度可调整",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow Escape只关闭弹窗",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 战斗界面无横向溢出",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow Escape退出演习保留游戏",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "narrow 无解释性占位文案",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "页面无未捕获异常",
+      "passed": true,
+      "detail": "[]"
+    },
+    {
+      "name": "不依赖在线字体与图像请求",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "errors": [],
+  "passed": 68,
+  "failed": 0
+}

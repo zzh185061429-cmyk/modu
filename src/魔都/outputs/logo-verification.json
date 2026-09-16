@@ -1,0 +1,41 @@
+{
+  "url": "file:///D:/BaiduNetdiskDownload/tavern_helper_template-main/dist/%E9%AD%94%E9%83%BD/index.html",
+  "results": [
+    {
+      "name": "入口页 LOGO 存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "入口页 LOGO 无 brightness(0)",
+      "passed": true,
+      "detail": "filter=none"
+    },
+    {
+      "name": "入口页内联素材是官方彩色 LOGO（洋红像素存在）",
+      "passed": true,
+      "detail": "{\"width\":1194,\"height\":630,\"total\":752220,\"opaque\":293870,\"magenta\":153017,\"gray\":137089,\"magentaRatio\":0.5207,\"grayRatio\":0.4665,\"dominantBucket\":\"13,0,5\"}"
+    },
+    {
+      "name": "开场覆盖层 LOGO 出现",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "开场 LOGO 无 brightness(0)",
+      "passed": true,
+      "detail": "filter=none"
+    }
+  ],
+  "entrySample": {
+    "width": 1194,
+    "height": 630,
+    "total": 752220,
+    "opaque": 293870,
+    "magenta": 153017,
+    "gray": 137089,
+    "magentaRatio": 0.5207,
+    "grayRatio": 0.4665,
+    "dominantBucket": "13,0,5"
+  }
+}
